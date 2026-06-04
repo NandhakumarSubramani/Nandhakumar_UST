@@ -1,0 +1,23 @@
+﻿@model HealthApp.Models.Patient
+@{
+    ViewBag.Title = "GetById";
+}
+
+<h2>GetById</h2>
+
+<h2>Patient Details</h2>
+
+@if (Model != null)
+{
+    <p>Id: @Model.PatientId</p>
+    <p>Name: @Model.FullName</p>
+    <p>DOB: @Model.DateOfBirth.ToString("yyyy-MM-dd")</p>
+    <p>Gender: @Model.Gender</p>
+    <p>Phone: @Model.PhoneNumber</p>
+}
+else
+{
+    <p>Patient not found</p>
+}
+
+<p><a href="/Patient/PatientIndex">Back</a></p>

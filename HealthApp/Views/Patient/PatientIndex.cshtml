@@ -1,0 +1,60 @@
+﻿@model List<HealthApp.Models.Patient>
+
+<h2 style="color:blue;">Patient Details</h2>
+
+<p><a href="/Patient/Create">Add New Patient</a></p>
+
+<form method="get" action="/Patient/GetById">
+    Search by Id:
+    <input type="number" name="id" />
+    <input type="submit" value="Search" />
+</form>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+
+    th {
+        background-color: #d3d3d3;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>DOB</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Insurance</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.PatientId</td>
+            <td>@item.FullName</td>
+            <td>@item.DateOfBirth.ToString("yyyy-MM-dd")</td>
+            <td>@item.Gender</td>
+            <td>@item.PhoneNumber</td>
+            <td>@item.Email</td>
+            <td>@item.InsuranceId</td>
+            <td>
+                <a href="/Patient/Edit/@item.PatientId">Edit</a>
+            </td>
+        </tr>
+    }
+
+</table>

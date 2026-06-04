@@ -1,0 +1,93 @@
+﻿@model List<HealthApp.Models.Doctor>
+
+<h2 style="color:blue;">Doctor Details</h2>
+
+<p><a href="/Doctor/Create">Add New Doctor</a></p>
+
+<!-- Search by Id -->
+<form method="get" action="/Doctor/GetById">
+    Search by Id:
+    <input type="number" name="id" />
+    <input type="submit" value="Search" />
+</form>
+
+<!-- Search by Specialisation -->
+<form method="get" action="/Doctor/SearchBySpecialisation">
+    Search by Specialisation:
+
+    <select name="specialisation">
+        <option value="">-- Select --</option>
+        <option value="GeneralPhysician">General Physician</option>
+        <option value="Cardiologist">Cardiologist</option>
+        <option value="Dermatologist">Dermatologist</option>
+        <option value="Neurologist">Neurologist</option>
+        <option value="Orthopedic">Orthopedic</option>
+        <option value="Pediatrician">Pediatrician</option>
+        <option value="Psychiatrist">Psychiatrist</option>
+        <option value="ENT">ENT</option>
+        <option value="Gynecologist">Gynecologist</option>
+    </select>
+
+    <input type="submit" value="Search" />
+</form>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+
+    th {
+        background-color: #d3d3d3;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Specialisation</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Experience</th>
+        <th>Fee</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DoctorId</td>
+                <td>@item.FullName</td>
+                <td>@item.Specialisation</td>
+                <td>@item.DoctorPhoneNo</td>
+                <td>@item.DoctorEmail</td>
+                <td>@item.YearsOfExperience</td>
+                <td>@item.ConsultationFee</td>
+                <td>@(item.IsActive ? "Active" : "Inactive")</td>
+                <td>
+                    <a href="/Doctor/ToggleStatus?id=@item.DoctorId">
+                        @(item.IsActive ? "Deactivate" : "Activate")
+                    </a>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="9">No doctors found</td>
+        </tr>
+    }
+</table>

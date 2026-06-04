@@ -1,0 +1,57 @@
+﻿@model List<HealthApp.Models.HealthRecord>
+
+<h2 style="color:blue;">Patient Records</h2>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+
+    th {
+        background-color: #d3d3d3;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>Record Id</th>
+        <th>Patient Name</th>
+        <th>Doctor Name</th>
+        <th>Visit Date</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+    </tr>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RecordId</td>
+                <td>@item.Patient.FullName</td>
+                <td>@item.Doctor.FullName</td>
+                <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Diagnosis</td>
+                <td>@item.Prescription</td>
+                <td>@item.Notes</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="7">No records found</td>
+        </tr>
+    }
+
+</table>
+
+<p>
+    <a href="/HealthRecord/HealthRecordsIndex">Back</a>
+</p>

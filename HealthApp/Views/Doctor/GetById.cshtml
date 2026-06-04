@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "GetById";
+}
+
+@model HealthApp.Models.Doctor
+
+<h2>Doctor Details</h2>
+
+@if (Model != null)
+{
+    <p>@Model.FullName</p>
+    <p>@Model.Specialisation</p>
+    <p>@Model.DoctorPhoneNo</p>
+    <p>@Model.DoctorEmail</p>
+    <p>Status: @(Model.IsActive ? "Active" : "Inactive")</p>
+}
+else
+{
+    <p>Doctor not found</p>
+}
+
+<p><a href="/Doctor/DoctorIndex">Back</a></p>

@@ -1,0 +1,69 @@
+﻿@model List<HealthApp.Models.HealthRecord>
+
+<h2 style="color:blue;">Health Records</h2>
+
+<p>
+    <a href="/HealthRecord/Create">Add New Record</a>
+</p>
+
+
+<form method="get" action="/HealthRecord/GetPatientRecords">
+    Search by Patient Id:
+    <input type="number" name="patientId" />
+    <input type="submit" value="Search" />
+</form>
+
+<br />
+
+<form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient">
+    Doctor Id:
+    <input type="number" name="doctorId" />
+
+    Patient Id:
+    <input type="number" name="patientId" />
+
+    <input type="submit" value="Search" />
+</form>
+
+<br />
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+
+    th {
+        background-color: #d3d3d3;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>Record Id</th>
+        <th>Patient Name</th>
+        <th>Doctor Name</th>
+        <th>Visit Date</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.RecordId</td>
+            <td>@item.Patient.FullName</td>
+            <td>@item.Doctor.FullName</td>
+            <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+            <td>@item.Diagnosis</td>
+            <td>@item.Prescription</td>
+            <td>@item.Notes</td>
+        </tr>
+    }
+
+</table>

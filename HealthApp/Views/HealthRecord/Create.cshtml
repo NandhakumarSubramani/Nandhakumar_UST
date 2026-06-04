@@ -1,0 +1,33 @@
+﻿@model HealthApp.Models.HealthRecord
+
+<h2>Add New Health Record</h2>
+
+@using (Html.BeginForm())
+{
+    <p>
+        Patient Id:
+        <input type="number" name="Patient.PatientId" />
+    </p>
+
+    <p>
+        Doctor Id:
+        <input type="number" name="Doctor.DoctorId" />
+    </p>
+
+    <p>
+        Visit Date:
+        @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}", new { type = "date" })
+    </p>
+
+    <p>Diagnosis: @Html.TextBoxFor(m => m.Diagnosis)</p>
+
+    <p>Prescription: @Html.TextBoxFor(m => m.Prescription)</p>
+
+    <p>Notes: @Html.TextBoxFor(m => m.Notes)</p>
+
+    <input type="submit" value="Save" />
+}
+
+<p>
+    <a href="/HealthRecord/HealthRecordsIndex">Back</a>
+</p>

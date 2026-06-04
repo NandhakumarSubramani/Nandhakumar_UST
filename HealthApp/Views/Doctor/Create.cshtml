@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+
+
+@model HealthApp.Models.Doctor
+
+<h2>Add Doctor</h2>
+
+@using (Html.BeginForm())
+{
+    <p>Name: @Html.TextBoxFor(m => m.FullName)</p>
+
+    <p>Specialisation: @Html.EnumDropDownListFor(m => m.Specialisation)</p>
+
+    <p>Phone: @Html.TextBoxFor(m => m.DoctorPhoneNo)</p>
+
+    <p>Email: @Html.TextBoxFor(m => m.DoctorEmail)</p>
+
+    <p>Experience: @Html.TextBoxFor(m => m.YearsOfExperience)</p>
+
+    <p>Consultation Fee: @Html.TextBoxFor(m => m.ConsultationFee)</p>
+
+    <input type="submit" value="Save" />
+}

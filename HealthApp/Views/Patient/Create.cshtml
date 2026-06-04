@@ -1,0 +1,21 @@
+﻿@model HealthApp.Models.Patient
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2> Create</h2>
+
+<h2>Add Patient</h2>
+
+@using (Html.BeginForm())
+{
+    <p>Name: @Html.TextBoxFor(m => m.FullName)</p>
+    <p>DOB: @Html.TextBoxFor(m => m.DateOfBirth)</p>
+    <p>Gender: @Html.EnumDropDownListFor(m => m.Gender)</p>
+    <p>Phone: @Html.TextBoxFor(m => m.PhoneNumber)</p>
+    <p>Email: @Html.TextBoxFor(m => m.Email)</p>
+    <p>Insurance: @Html.TextBoxFor(m => m.InsuranceId)</p>
+
+    <input type="submit" value="Save" />
+}
+
