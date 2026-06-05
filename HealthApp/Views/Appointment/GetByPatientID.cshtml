@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "GetByPatientID";
+}
+
+<h2>GetByPatientID</h2>
+
+@model List<HealthApp.Models.Appointment>
+
+<h2>Appointments by Patient</h2>
+
+<table border="1">
+    <tr>
+        <th>Id</th>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Slot</th>
+        <th>Status</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.AppointmentId</td>
+            <td>@item.Doctor?.FullName</td>
+            <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+            <td>@item.TimeSlot</td>
+            <td>@item.Status</td>
+        </tr>
+    }
+</table>
+
+<p><a href="/Appointment/AppointmentIndex">Back</a></p>

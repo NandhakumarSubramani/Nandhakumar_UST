@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "CheckAvailability";
+}
+
+<h2>CheckAvailability</h2>
+
+@model List<string>
+
+<h2>Available Slots</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <ul>
+        @foreach (var slot in Model)
+        {
+            <li>@slot</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No slots available</p>
+}
+
+<p><a href="/Appointment/AppointmentIndex">Back</a></p>

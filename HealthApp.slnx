@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="HealthApp/HealthApp.csproj" Id="600f6cc1-e239-4577-9f52-27b319b37f94" />
+  <Project Path="HealthApp_WebApi/HealthApp_WebApi.csproj" Id="d8041ec4-8f65-4434-ae49-f96c460cc8a5" />
 </Solution>

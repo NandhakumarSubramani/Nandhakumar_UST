@@ -19,6 +19,9 @@ namespace HealthApp
             container.RegisterType<IDoctorService, DoctorService>();
             container.RegisterType<IHealthRecordRepository, HealthRecordRepository>();
             container.RegisterType<IHealthRecordService, HealthRecordService>();
+            container.RegisterType<IAppointmentRepository, AppointmentRepository>();
+            container.RegisterType<IAppointmentService, AppointmentService>();
+
 
             // register all your components with the container here
             // it is NOT necessary to register your controllers

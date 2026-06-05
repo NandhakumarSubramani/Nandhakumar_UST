@@ -5,7 +5,6 @@ using System.Web;
 
 namespace HealthApp.Models
 {
-
     public enum GenderType
     {
         Male,

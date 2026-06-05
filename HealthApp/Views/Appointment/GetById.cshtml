@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "GetById";
+}
+
+<h2>GetById</h2>
+
+@model HealthApp.Models.Appointment
+
+<h2>Appointment Details</h2>
+
+@if (Model != null)
+{
+    <p><b>Id:</b> @Model.AppointmentId</p>
+    <p><b>Patient:</b> @Model.Patient.FullName</p>
+    <p><b>Doctor:</b> @Model.Doctor.FullName</p>
+    <p><b>Date:</b> @Model.ScheduledDate.ToString("yyyy-MM-dd")</p>
+    <p><b>Time Slot:</b> @Model.TimeSlot</p>
+    <p><b>Status:</b> @Model.Status</p>
+}
+else
+{
+    <p>No appointment found</p>
+}
+
+<p><a href="/Appointment/AppointmentIndex">Back</a></p>

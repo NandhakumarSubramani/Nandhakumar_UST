@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewBag.Title = "AppointmentIndex";
+}
+
+
+@model List<HealthApp.Models.Appointment>
+
+<h2 style="color:blue;">Appointment Details</h2>
+
+<p><a href="/Appointment/Create">Book Appointment</a></p>
+
+
+
+<form method="get" action="/Appointment/GetById">
+    Search by Id:
+    <input type="number" name="id" />
+    <input type="submit" value="Search" />
+</form>
+
+<br />
+
+
+
+<form method="get" action="/Appointment/GetByPatientID">
+    Search by Patient Id:
+    <input type="number" name="patientId" />
+    <input type="submit" value="Search" />
+</form>
+
+<br />
+
+
+
+
+<form method="get" action="/Appointment/CheckAvailability">
+    Doctor Id:
+    <input type="number" name="doctorId" />
+
+    Date:
+    <input type="date" name="date" />
+
+    <input type="submit" value="Check Availability" />
+</form>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+
+    th {
+        background-color: #d3d3d3;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time Slot</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.AppointmentId</td>
+                <td>@item.Patient.FullName</td>
+                <td>@item.Doctor.FullName</td>
+                <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.TimeSlot</td>
+                <td>@item.Status</td>
+
+                <td>
+                    <a href="/Appointment/Confirm?id=@item.AppointmentId">Confirm</a> |
+                    <a href="/Appointment/Cancel?id=@item.AppointmentId">Cancel</a>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="7">No appointments found</td>
+        </tr>
+    }
+</table>
