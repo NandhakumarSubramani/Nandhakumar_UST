@@ -3,37 +3,46 @@
 <h2 class="mb-3">Add New Health Record</h2>
 
 <div class="card shadow p-4">
+
     @using (Html.BeginForm())
     {
-        <div class="form-group">
-            <label>Patient Id</label>
-            <input type="number" name="PatientId" class="form-control" />
-        </div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-2" })
 
-        <div class="form-group mt-2">
-            <label>Doctor Id</label>
-            <input type="number" name="DoctorId" class="form-control" />
-        </div>
+    <div class="form-group">
+        <label>Patient Id</label>
+        <input type="number" name="Patient.PatientId" class="form-control" />
+        @Html.ValidationMessage("Patient.PatientId", "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Doctor Id</label>
+        <input type="number" name="Doctor.DoctorId" class="form-control" />
+        @Html.ValidationMessage("Doctor.DoctorId", "", new { @class = "text-danger" })
+    </div>
 
         <div class="form-group mt-2">
             <label>Visit Date</label>
             @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}",
                 new { @class = "form-control", type = "date" })
+            @Html.ValidationMessageFor(m => m.VisitDate, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">
             <label>Diagnosis</label>
             @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">
             <label>Prescription</label>
             @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">
             <label>Notes</label>
-            @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
+            @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
         </div>
 
         <div class="mt-3">
@@ -41,4 +50,5 @@
             <a href="/HealthRecord/HealthRecordsIndex" class="btn btn-secondary">Back</a>
         </div>
     }
+
 </div>

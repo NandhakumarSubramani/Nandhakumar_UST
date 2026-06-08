@@ -19,8 +19,13 @@ namespace HealthApp.Service.Impl
         public void AddDoctor(Doctor doctor)
         {
             var doctors = _repo.GetAll();
-            doctor.IsActive = true;
-
+            var email = doctor.DoctorEmail?.Trim().ToLower();
+            bool exists = doctors.Any(d =>
+                d.DoctorEmail.Trim().ToLower() == email);
+            if (exists)
+            {
+                throw new Exception("Email already exists");
+            }
             _repo.Add(doctor);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -18,8 +19,14 @@ namespace HealthApp.Models
         public int AppointmentId { get; set; }
         public Patient Patient { get; set; } = default;
         public Doctor Doctor { get; set; } = default;
+
+        [Required(ErrorMessage = "Date is required")]
+        [DataType(DataType.Date)]
         public DateTime ScheduledDate { get; set; }
+
+        [Required(ErrorMessage = "Time slot is required")]
         public string TimeSlot { get; set; } = string.Empty;
+
         public AppointmentStatus Status { get; private set; }
             = AppointmentStatus.Pending;
 

@@ -1,5 +1,6 @@
 ﻿using HealthApp.Models;
 using HealthApp.Service.Interface;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -36,15 +37,35 @@ namespace HealthApp.Controllers
         [HttpPost]
         public ActionResult Create(Patient patient)
         {
-            _service.RegisterPatient(patient);
-            return RedirectToAction("PatientIndex");
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(patient);
+                }
+                _service.RegisterPatient(patient);
+                return RedirectToAction("PatientIndex");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(patient);
+            }
         }
 
         [HttpPost]
         public ActionResult Edit(int id, Patient patient)
         {
-            _service.UpdatePatientById(id, patient);
-            return RedirectToAction("PatientIndex");
+            try
+            {
+                _service.UpdatePatientById(id, patient);
+                return RedirectToAction("PatientIndex");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(patient);
+            }
         }
         public ActionResult Search(string query)
         {

@@ -1,6 +1,7 @@
 ﻿using HealthApp.Database;
 using HealthApp.Models;
 using HealthApp.Service.Interface;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -60,33 +61,50 @@ namespace HealthApp.Controllers
         {
             return View();
         }
-
         [HttpPost]
         public ActionResult Create(HealthRecord record)
         {
-            if (record.Patient == null || record.Patient.PatientId == 0 ||
-                record.Doctor == null || record.Doctor.DoctorId == 0)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(record);
+                }
+
+                if (record.Patient == null || record.Patient.PatientId == 0)
+                {
+                    ModelState.AddModelError("Patient.PatientId", "Patient Id is required");
+                    return View(record);
+                }
+
+                if (record.Doctor == null || record.Doctor.DoctorId == 0)
+                {
+                    ModelState.AddModelError("Doctor.DoctorId", "Doctor Id is required");
+                    return View(record);
+                }
+                var patient = _patientService.GetPatientById(record.Patient.PatientId);
+                var doctor = _doctorService.GetDoctorById(record.Doctor.DoctorId);
+
+                record.Patient = patient;
+                record.Doctor = doctor;
+
+                var existing = _service.GetAllRecords().Any(r =>
+                    r.Patient.PatientId == record.Patient.PatientId &&
+                    r.Doctor.DoctorId == record.Doctor.DoctorId &&
+                    r.VisitDate.Date == record.VisitDate.Date);
+                if (existing)
+                {
+                    ModelState.AddModelError("", "Record already exists!");
+                    return View(record);
+                }
+                _service.AddRecord(record);
+                return RedirectToAction("HealthRecordsIndex");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
                 return View(record);
             }
-            var patient = _patientService.GetPatientById(record.Patient.PatientId);
-            var doctor = _doctorService.GetDoctorById(record.Doctor.DoctorId);
-
-            record.Patient = patient;
-            record.Doctor = doctor;
-
-            var existing = _service.GetAllRecords().Any(r =>
-                r.Patient.PatientId == record.Patient.PatientId &&
-                r.Doctor.DoctorId == record.Doctor.DoctorId &&
-                r.VisitDate == record.VisitDate);
-
-            if (existing)
-            {
-                ViewBag.Message = "Record already exists!";
-                return View(record);
-            }
-            _service.AddRecord(record);
-            return RedirectToAction("HealthRecordsIndex");
         }
         public ActionResult CreateFromAppointment(int appointmentId)
         {
@@ -115,7 +133,6 @@ namespace HealthApp.Controllers
             record.Doctor = doctor;
 
             _service.AddRecord(record);
-
 
             var appointment = AppointmentDb.Appointments
                 .FirstOrDefault(a => a.Patient.PatientId == record.Patient.PatientId

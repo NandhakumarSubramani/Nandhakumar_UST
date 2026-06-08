@@ -1,5 +1,9 @@
 ﻿@model HealthApp.Models.Patient
 
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
 @{
     ViewBag.Title = "Create";
 }
@@ -11,6 +15,7 @@
     <div class="form-group">
         <label>Name</label>
         @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group mt-2">
@@ -30,10 +35,13 @@
         @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
     </div>
 
+
     <div class="form-group mt-2">
         <label>Email</label>
         @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
+
 
     <div class="form-group mt-2">
         <label>Insurance</label>
