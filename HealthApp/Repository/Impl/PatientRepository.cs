@@ -25,14 +25,13 @@ namespace HealthApp.Repository.Impl
         {
             return PatientDb.Patients.FirstOrDefault(pa => pa.PatientId == id);
         }
-
-        public Patient UpdatePatient(int id, Patient patient)
+        public void UpdatePatient(int id, Patient patient)
         {
             var p = PatientDb.Patients.FirstOrDefault(pa => pa.PatientId == id);
 
             if (p == null)
             {
-                return null;
+                return;
             }
 
             p.FullName = patient.FullName;
@@ -41,8 +40,6 @@ namespace HealthApp.Repository.Impl
             p.PhoneNumber = patient.PhoneNumber;
             p.Email = patient.Email;
             p.InsuranceId = patient.InsuranceId;
-
-            return p;
         }
     }
 }

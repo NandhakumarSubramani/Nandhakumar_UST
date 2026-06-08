@@ -2,6 +2,7 @@
 using HealthApp.Models;
 using HealthApp.Service.Interface;
 using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace HealthApp.Controllers
@@ -21,15 +22,27 @@ namespace HealthApp.Controllers
             return View(appointment);
         }
 
-        public ActionResult GetById(int id)
+        public ActionResult GetById(int? id)
         {
-            var result = _service.GetAppointmentById(id);
-            return View(result);
+            if (!id.HasValue)
+            {
+                return RedirectToAction("AppointmentIndex");
+            }
+
+            var result = _service.GetAppointmentById(id.Value);
+
+            return View("AppointmentIndex", new List<Appointment> { result });
         }
 
-        public ActionResult GetByPatientID(int patientId)
+        public ActionResult GetByPatientID(int? patientId)
         {
-            var result = _service.GetAppointmentsByPatient(patientId);
+            if (!patientId.HasValue)
+            {
+                return RedirectToAction("AppointmentIndex");
+            }
+
+            var result = _service.GetAppointmentsByPatient(patientId.Value);
+
             return View("AppointmentIndex", result);
         }
 
@@ -59,10 +72,20 @@ namespace HealthApp.Controllers
             return RedirectToAction("AppointmentIndex");
         }
 
-        public ActionResult CheckAvailability(int doctorId, DateTime date)
+        public ActionResult CheckAvailability(int? doctorId, DateTime? date)
         {
-            var slots = _service.CheckDoctorAvailability(doctorId, date);
-            return View(slots);
+            if (!doctorId.HasValue || !date.HasValue)
+            {
+                return RedirectToAction("AppointmentIndex");
+            }
+
+            if (date.Value.Date < DateTime.Today)
+            {
+                return RedirectToAction("AppointmentIndex");
+            }
+                var slots = _service.CheckDoctorAvailability(doctorId.Value, date.Value);
+                return View(slots);
         }
+
     }
 }

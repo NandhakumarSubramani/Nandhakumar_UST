@@ -1,5 +1,6 @@
 ﻿using HealthApp.Models;
 using HealthApp.Service.Interface;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace HealthApp.Controllers
@@ -55,5 +56,22 @@ namespace HealthApp.Controllers
             return RedirectToAction("DoctorIndex");
         }
 
+        public ActionResult Search(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return RedirectToAction("DoctorIndex");
+            }
+            if (int.TryParse(query, out int id))
+            {
+                var doctor = _service.GetDoctorById(id);
+                return View("GetById", doctor);
+            }
+            var doctors = _service.GetAllDoctors()
+                                  .Where(d => d.FullName.ToLower().Contains(query.ToLower()))
+                                  .ToList();
+
+            return View("DoctorIndex", doctors);
+        }
     }
 }

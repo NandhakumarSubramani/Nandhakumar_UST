@@ -1,31 +1,44 @@
 ﻿@model HealthApp.Models.HealthRecord
 
-<h2>Add New Health Record</h2>
+<h2 class="mb-3">Add New Health Record</h2>
 
-@using (Html.BeginForm())
-{
-    <p>
-        Patient Id:
-        <input type="number" name="Patient.PatientId" />
-    </p>
+<div class="card shadow p-4">
+    @using (Html.BeginForm())
+    {
+        <div class="form-group">
+            <label>Patient Id</label>
+            <input type="number" name="PatientId" class="form-control" />
+        </div>
 
-    <p>
-        Doctor Id:
-        <input type="number" name="Doctor.DoctorId" />
-    </p>
+        <div class="form-group mt-2">
+            <label>Doctor Id</label>
+            <input type="number" name="DoctorId" class="form-control" />
+        </div>
 
-    <p>
-        Visit Date:
-        @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}", new { type = "date" })
-    </p>
+        <div class="form-group mt-2">
+            <label>Visit Date</label>
+            @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}",
+                new { @class = "form-control", type = "date" })
+        </div>
 
-    <p>Diagnosis: @Html.TextBoxFor(m => m.Diagnosis)</p>
+        <div class="form-group mt-2">
+            <label>Diagnosis</label>
+            @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
+        </div>
 
-    <p>Prescription: @Html.TextBoxFor(m => m.Prescription)</p>
+        <div class="form-group mt-2">
+            <label>Prescription</label>
+            @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
+        </div>
 
-    <p>Notes: @Html.TextBoxFor(m => m.Notes)</p>
+        <div class="form-group mt-2">
+            <label>Notes</label>
+            @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
+        </div>
 
-    <input type="submit" value="Save" />
-}
-
-<p><a href="/HealthRecord/HealthRecordsIndex">Back</a></p>
+        <div class="mt-3">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a href="/HealthRecord/HealthRecordsIndex" class="btn btn-secondary">Back</a>
+        </div>
+    }
+</div>

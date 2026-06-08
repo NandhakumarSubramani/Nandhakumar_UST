@@ -1,5 +1,6 @@
 ﻿using HealthApp.Models;
 using HealthApp.Service.Interface;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace HealthApp.Controllers
@@ -7,7 +8,6 @@ namespace HealthApp.Controllers
     public class PatientController : Controller
     {
         private readonly IPatientService _service;
-
         public PatientController(IPatientService service)
         {
             _service = service;
@@ -23,7 +23,11 @@ namespace HealthApp.Controllers
             var patient = _service.GetPatientById(id);
             return View(patient);
         }
-
+        public ActionResult Edit(int id)
+        {
+            var patient = _service.GetPatientById(id);
+            return View(patient);
+        }
         public ActionResult Create()
         {
             return View();
@@ -36,17 +40,27 @@ namespace HealthApp.Controllers
             return RedirectToAction("PatientIndex");
         }
 
-        public ActionResult Edit(int id)
-        {
-            var patient = _service.GetPatientById(id);
-            return View(patient);
-        }
-
         [HttpPost]
         public ActionResult Edit(int id, Patient patient)
         {
             _service.UpdatePatientById(id, patient);
             return RedirectToAction("PatientIndex");
+        }
+        public ActionResult Search(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return RedirectToAction("PatientIndex");
+            }
+            if (int.TryParse(query, out int id))
+            {
+                var patient = _service.GetPatientById(id);
+                return View("GetById", patient);
+            }
+            var patients = _service.GetAll().Where(p => p.FullName
+                        .ToLower().Contains(query.ToLower())).ToList();
+
+            return View("PatientIndex", patients);
         }
     }
 }

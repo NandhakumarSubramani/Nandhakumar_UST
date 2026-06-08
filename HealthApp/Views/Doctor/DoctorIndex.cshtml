@@ -1,92 +1,96 @@
 ﻿@model List<HealthApp.Models.Doctor>
 
-<h2 style="color:blue;">Doctor Details</h2>
+<h2 class="text-primary mb-3">Doctor Details</h2>
 
-<p><a href="/Doctor/Create">Add New Doctor</a></p>
+<div class="mb-3">
+    <a href="/Doctor/Create" class="btn btn-success">Add New Doctor</a>
+</div>
 
-<form method="get" action="/Doctor/GetById">
-    Search by Id:
-    <input type="number" name="id" />
-    <input type="submit" value="Search" />
-</form>
-
-<form method="get" action="/Doctor/SearchBySpecialisation">
-    Search by Specialisation:
-
-    <select name="specialisation">
-        <option value="">-- Select --</option>
-        <option value="GeneralPhysician">General Physician</option>
-        <option value="Cardiologist">Cardiologist</option>
-        <option value="Dermatologist">Dermatologist</option>
-        <option value="Neurologist">Neurologist</option>
-        <option value="Orthopedic">Orthopedic</option>
-        <option value="Pediatrician">Pediatrician</option>
-        <option value="Psychiatrist">Psychiatrist</option>
-        <option value="ENT">ENT</option>
-        <option value="Gynecologist">Gynecologist</option>
-    </select>
-
-    <input type="submit" value="Search" />
-</form>
-
-<style>
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        padding: 5px;
-    }
-
-    th {
-        background-color: #d3d3d3;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-</style>
-
-<table>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Specialisation</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Experience</th>
-        <th>Fee</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-
-    @if (Model != null && Model.Count > 0)
+<div class="card p-3 mb-3 shadow">
+    @using (Html.BeginForm("Search", "Doctor", FormMethod.Get))
     {
-        foreach (var item in Model)
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label style="margin-bottom:0;"><b>Enter ID or Name:</b></label>
+            <input type="text" name="query" class="form-control" style="max-width:250px;" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    }
+</div>
+<div class="card p-3 mb-3 shadow">
+    @using (Html.BeginForm("SearchBySpecialisation", "Doctor", FormMethod.Get))
+    {
+        <div style="display:flex; align-items:center; gap:10px;">
+
+            <label style="margin-bottom:0;"><b>Specialisation:</b></label>
+
+            <select name="specialisation" class="form-control" style="max-width:250px;">
+                <option value="">-- Select --</option>
+                <option>GeneralPhysician</option>
+                <option>Cardiologist</option>
+                <option>Dermatologist</option>
+                <option>Neurologist</option>
+                <option>Orthopedic</option>
+                <option>Pediatrician</option>
+                <option>Psychiatrist</option>
+                <option>ENT</option>
+                <option>Gynecologist</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+
+        </div>
+    }
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Specialisation</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Experience</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.DoctorId</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Specialisation</td>
+                    <td>@item.DoctorPhoneNo</td>
+                    <td>@item.DoctorEmail</td>
+                    <td>@item.YearsOfExperience</td>
+                    <td>@item.ConsultationFee</td>
+
+                    <td>
+                        <span class="badge @(item.IsActive ? "badge-success" : "badge-danger")" style="color:black;">
+                            @(item.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+
+                    <td>
+                        <a href="/Doctor/ToggleStatus?id=@item.DoctorId"
+                           class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
+                            @(item.IsActive ? "Deactivate" : "Activate")
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@item.DoctorId</td>
-                <td>@item.FullName</td>
-                <td>@item.Specialisation</td>
-                <td>@item.DoctorPhoneNo</td>
-                <td>@item.DoctorEmail</td>
-                <td>@item.YearsOfExperience</td>
-                <td>@item.ConsultationFee</td>
-                <td>@(item.IsActive ? "Active" : "Inactive")</td>
-                <td>
-                    <a href="/Doctor/ToggleStatus?id=@item.DoctorId">
-                        @(item.IsActive ? "Deactivate" : "Activate")
-                    </a>
-                </td>
+                <td colspan="9" class="text-center text-danger">No doctors found</td>
             </tr>
         }
-    }
-    else
-    {
-        <tr>
-            <td colspan="9">No doctors found</td>
-        </tr>
-    }
+    </tbody>
 </table>
-

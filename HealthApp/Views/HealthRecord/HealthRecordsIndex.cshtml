@@ -1,69 +1,54 @@
 ﻿@model List<HealthApp.Models.HealthRecord>
 
-<h2 style="color:blue;">Health Records</h2>
+<h2 class="text-primary mb-3">Health Records</h2>
 
-<p>
-    <a href="/HealthRecord/Create">Add New Record</a>
-</p>
+<div class="mb-3">
+    <a href="/HealthRecord/Create" class="btn btn-success">Add New Record</a>
+</div>
 
+<div class="card p-3 mb-3 shadow">
+    <form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Doctor Id</label>
+                <input type="number" name="doctorId" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label>Patient Id</label>
+                <input type="number" name="patientId" class="form-control" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
 
-<form method="get" action="/HealthRecord/GetPatientRecords">
-    Search by Patient Id:
-    <input type="number" name="patientId" />
-    <input type="submit" value="Search" />
-</form>
-
-<br />
-
-<form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient">
-    Doctor Id:
-    <input type="number" name="doctorId" />
-
-    Patient Id:
-    <input type="number" name="patientId" />
-
-    <input type="submit" value="Search" />
-</form>
-
-<br />
-
-<style>
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        padding: 5px;
-    }
-
-    th {
-        background-color: #d3d3d3;
-    }
-</style>
-
-<table>
-    <tr>
-        <th>Record Id</th>
-        <th>Patient Name</th>
-        <th>Doctor Name</th>
-        <th>Visit Date</th>
-        <th>Diagnosis</th>
-        <th>Prescription</th>
-        <th>Notes</th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
         <tr>
-            <td>@item.RecordId</td>
-            <td>@item.Patient.FullName</td>
-            <td>@item.Doctor.FullName</td>
-            <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
-            <td>@item.Diagnosis</td>
-            <td>@item.Prescription</td>
-            <td>@item.Notes</td>
+            <th>Record Id</th>
+            <th>Patient Name</th>
+            <th>Doctor Name</th>
+            <th>Visit Date</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Notes</th>
         </tr>
-    }
+    </thead>
 
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RecordId</td>
+                <td>@item.Patient.FullName</td>
+                <td>@item.Doctor.FullName</td>
+                <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Diagnosis</td>
+                <td>@item.Prescription</td>
+                <td>@item.Notes</td>
+            </tr>
+        }
+    </tbody>
 </table>

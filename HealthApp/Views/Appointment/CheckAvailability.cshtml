@@ -1,26 +1,24 @@
-﻿
-@{
-    ViewBag.Title = "CheckAvailability";
-}
+﻿@model List<string>
 
-<h2>CheckAvailability</h2>
+<h2 class="mb-3">Available Slots</h2>
 
-@model List<string>
+<div class="card shadow p-4">
 
-<h2>Available Slots</h2>
+    @if (Model != null && Model.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var slot in Model)
+            {
+                <li class="list-group-item">@slot</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            No slots available
+        </div>
+    }
 
-@if (Model != null && Model.Count > 0)
-{
-    <ul>
-        @foreach (var slot in Model)
-        {
-            <li>@slot</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No slots available</p>
-}
-
-<p><a href="/Appointment/AppointmentIndex">Back</a></p>
+    <a href="/Appointment/AppointmentIndex" class="btn btn-secondary mt-3">Back</a>
+</div>

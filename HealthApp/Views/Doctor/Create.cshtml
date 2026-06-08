@@ -4,26 +4,46 @@
 }
 
 
-
 @model HealthApp.Models.Doctor
 
-<h2>Add Doctor</h2>
+<h2 class="mb-3">Add Doctor</h2>
 
-@using (Html.BeginForm())
-{
-    <p>Name: @Html.TextBoxFor(m => m.FullName)</p>
+<div class="card shadow p-4">
+    @using (Html.BeginForm())
+    {
+        <div class="form-group">
+            <label>Name</label>
+            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+        </div>
 
-    <p>Specialisation: @Html.EnumDropDownListFor(m => m.Specialisation)</p>
+        <div class="form-group mt-2">
+            <label>Specialisation</label>
+            @Html.EnumDropDownListFor(m => m.Specialisation, new { @class = "form-control" })
+        </div>
 
-    <p>Phone: @Html.TextBoxFor(m => m.DoctorPhoneNo)</p>
+        <div class="form-group mt-2">
+            <label>Phone</label>
+            @Html.TextBoxFor(m => m.DoctorPhoneNo, new { @class = "form-control" })
+        </div>
 
-    <p>Email: @Html.TextBoxFor(m => m.DoctorEmail)</p>
+        <div class="form-group mt-2">
+            <label>Email</label>
+            @Html.TextBoxFor(m => m.DoctorEmail, new { @class = "form-control" })
+        </div>
 
-    <p>Experience: @Html.TextBoxFor(m => m.YearsOfExperience)</p>
+        <div class="form-group mt-2">
+            <label>Experience</label>
+            @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control" })
+        </div>
 
-    <p>Consultation Fee: @Html.TextBoxFor(m => m.ConsultationFee)</p>
+        <div class="form-group mt-2">
+            <label>Consultation Fee</label>
+            @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control" })
+        </div>
 
-    <input type="submit" value="Save" />
-}
-
-<p><a href="/Doctor/DoctorIndex">Back</a></p>
+        <div class="mt-3">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a href="/Doctor/DoctorIndex" class="btn btn-secondary">Back</a>
+        </div>
+    }
+</div>

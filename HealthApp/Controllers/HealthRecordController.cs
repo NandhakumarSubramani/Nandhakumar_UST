@@ -1,4 +1,5 @@
-﻿using HealthApp.Models;
+﻿using HealthApp.Database;
+using HealthApp.Models;
 using HealthApp.Service.Interface;
 using System.Linq;
 using System.Web.Mvc;
@@ -33,15 +34,26 @@ namespace HealthApp.Controllers
             {
                 return RedirectToAction("HealthRecordsIndex");
             }
-
             var records = _service.GetPatientRecords(patientId.Value);
             return View("GetPatientRecords", records);
         }
 
-        public ActionResult GetRecordsByDoctorAndPatient(int doctorId, int patientId)
+        public ActionResult GetRecordsByDoctorAndPatient(int? doctorId, int? patientId)
         {
-            var records = _service.GetHealthRecordsByDoctor(doctorId, patientId);
-            return View("GetRecordsByDoctorAndPatient", records);
+            if (!doctorId.HasValue && !patientId.HasValue)
+            {
+                return RedirectToAction("HealthRecordsIndex");
+            }
+            var records = _service.GetAllRecords().AsQueryable();
+            if (doctorId.HasValue)
+            {
+                records = records.Where(r => r.Doctor.DoctorId == doctorId.Value);
+            }
+            if (patientId.HasValue)
+            {
+                records = records.Where(r => r.Patient.PatientId == patientId.Value);
+            }
+            return View("GetRecordsByDoctorAndPatient", records.ToList());
         }
 
         public ActionResult Create()
@@ -57,7 +69,6 @@ namespace HealthApp.Controllers
             {
                 return View(record);
             }
-
             var patient = _patientService.GetPatientById(record.Patient.PatientId);
             var doctor = _doctorService.GetDoctorById(record.Doctor.DoctorId);
 
@@ -74,10 +85,47 @@ namespace HealthApp.Controllers
                 ViewBag.Message = "Record already exists!";
                 return View(record);
             }
+            _service.AddRecord(record);
+            return RedirectToAction("HealthRecordsIndex");
+        }
+        public ActionResult CreateFromAppointment(int appointmentId)
+        {
+            var appointment = AppointmentDb.Appointments
+                .FirstOrDefault(a => a.AppointmentId == appointmentId);
+            if (appointment == null)
+            {
+                return RedirectToAction("AppointmentIndex", "Appointment");
+            }
+            var record = new HealthRecord
+            {
+                Patient = appointment.Patient,
+                Doctor = appointment.Doctor,
+                VisitDate = appointment.ScheduledDate
+            };
+            return View(record);
+        }
+
+        [HttpPost]
+        public ActionResult CreateFromAppointment(HealthRecord record)
+        {
+            var patient = _patientService.GetPatientById(record.Patient.PatientId);
+            var doctor = _doctorService.GetDoctorById(record.Doctor.DoctorId);
+
+            record.Patient = patient;
+            record.Doctor = doctor;
 
             _service.AddRecord(record);
 
-            return RedirectToAction("HealthRecordsIndex");
+
+            var appointment = AppointmentDb.Appointments
+                .FirstOrDefault(a => a.Patient.PatientId == record.Patient.PatientId
+                    && a.Doctor.DoctorId == record.Doctor.DoctorId
+                    && a.ScheduledDate.Date == record.VisitDate.Date);
+
+            appointment?.Complete();
+
+            return RedirectToAction("AppointmentIndex", "Appointment");
         }
+
     }
 }

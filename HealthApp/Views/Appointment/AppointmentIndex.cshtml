@@ -1,101 +1,135 @@
-﻿
-@{
-    ViewBag.Title = "AppointmentIndex";
-}
+﻿@model List<HealthApp.Models.Appointment>
+
+<h2 class="text-primary mb-3">Appointment Details</h2>
+
+<div class="mb-3">
+    <a href="/Appointment/Create" class="btn btn-success">Book Appointment</a>
+</div>
 
 
-@model List<HealthApp.Models.Appointment>
+<div class="card p-3 mb-3 shadow">
+    <form method="get" action="/Appointment/GetById">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label style="margin-bottom:0;">Search by Id:</label>
+            <input type="number" name="id"
+                   class="form-control" style="max-width:200px;" />
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+    </form>
+</div>
 
-<h2 style="color:blue;">Appointment Details</h2>
-
-<p><a href="/Appointment/Create">Book Appointment</a></p>
-
-
-
-<form method="get" action="/Appointment/GetById">
-    Search by Id:
-    <input type="number" name="id" />
-    <input type="submit" value="Search" />
-</form>
-
-<br />
-
-
-
-<form method="get" action="/Appointment/GetByPatientID">
-    Search by Patient Id:
-    <input type="number" name="patientId" />
-    <input type="submit" value="Search" />
-</form>
-
-<br />
-
-
+<div class="card p-3 mb-3 shadow">
+    <form method="get" action="/Appointment/GetByPatientID">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label style="margin-bottom:0;">Patient Id:</label>
+            <input type="number" name="patientId"
+                   class="form-control" style="max-width:200px;" />
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+    </form>
+</div>
 
 
-<form method="get" action="/Appointment/CheckAvailability">
-    Doctor Id:
-    <input type="number" name="doctorId" />
 
-    Date:
-    <input type="date" name="date" />
+<div class="card p-3 mb-3 shadow">
+    <form method="get" action="/Appointment/CheckAvailability">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Doctor Id</label>
+                <input type="number" name="doctorId" class="form-control" />
+            </div>
 
-    <input type="submit" value="Check Availability" />
-</form>
+            <div class="col-md-4">
+                <label>Date</label>
+                <input type="date" name="date" class="form-control" />
+            </div>
 
-<style>
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    Check Availability
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 
-    th, td {
-        padding: 5px;
-    }
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
 
-    th {
-        background-color: #d3d3d3;
-    }
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.Patient.FullName</td>
+                    <td>@item.Doctor.FullName</td>
+                    <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.TimeSlot</td>
 
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-</style>
+                    <td>
+                        <span class="badge
+                            @(item.Status.ToString() == "Confirmed" ? "badge-success" :
+                              item.Status.ToString() == "Cancelled" ? "badge-danger" :
+                              item.Status.ToString() == "Completed" ? "badge-info" :
+                              "badge-warning")"
+                              style="color:black;">
+                            @item.Status
+                        </span>
+                    </td>
 
-<table>
-    <tr>
-        <th>Id</th>
-        <th>Patient</th>
-        <th>Doctor</th>
-        <th>Date</th>
-        <th>Time Slot</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
+                    <td>
+                        @if (item.Status == HealthApp.Models.AppointmentStatus.Pending)
+                        {
+                            <a href="/Appointment/Confirm?id=@item.AppointmentId"
+                               class="btn btn-success btn-sm">Confirm</a>
 
-    @if (Model != null && Model.Count > 0)
-    {
-        foreach (var item in Model)
+                            <a href="/Appointment/Cancel?id=@item.AppointmentId"
+                               class="btn btn-danger btn-sm">Cancel</a>
+                        }
+                        else if (item.Status == HealthApp.Models.AppointmentStatus.Confirmed)
+                        {
+
+                                <a href="/HealthRecord/CreateFromAppointment?appointmentId=@item.AppointmentId"
+                                   class="btn btn-info btn-sm">Add Health Record</a>
+
+                                <a href="/Appointment/Cancel?id=@item.AppointmentId"
+                                            class="btn btn-danger btn-sm">Cancel</a>
+                        }
+                        else if (item.Status == HealthApp.Models.AppointmentStatus.Cancelled)
+                        {
+                            <span class="text-danger">Cancelled</span>
+                        }
+                        else if (item.Status == HealthApp.Models.AppointmentStatus.Completed)
+                        {
+                            <span class="text-success">Completed</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@item.AppointmentId</td>
-                <td>@item.Patient.FullName</td>
-                <td>@item.Doctor.FullName</td>
-                <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
-                <td>@item.TimeSlot</td>
-                <td>@item.Status</td>
-
-                <td>
-                    <a href="/Appointment/Confirm?id=@item.AppointmentId">Confirm</a> |
-                    <a href="/Appointment/Cancel?id=@item.AppointmentId">Cancel</a>
+                <td colspan="7" class="text-center text-danger">
+                    No appointments found
                 </td>
             </tr>
         }
-    }
-    else
-    {
-        <tr>
-            <td colspan="7">No appointments found</td>
-        </tr>
-    }
+    </tbody>
 </table>

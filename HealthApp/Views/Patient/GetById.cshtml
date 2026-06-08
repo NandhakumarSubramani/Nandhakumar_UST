@@ -1,23 +1,29 @@
 ﻿@model HealthApp.Models.Patient
 @{
-    ViewBag.Title = "GetById";
+    ViewBag.Title = "Patient Details";
 }
 
-<h2>GetById</h2>
+<h2 class="mb-4">Patient Details</h2>
 
-<h2>Patient Details</h2>
+<div class="card shadow p-4">
+    @if (Model != null)
+    {
+        <p><strong>Id:</strong> @Model.PatientId</p>
+        <p><strong>Name:</strong> @Model.FullName</p>
+        <p><strong>DOB:</strong> @Model.DateOfBirth.ToString("yyyy-MM-dd")</p>
+        <p><strong>Gender:</strong> @Model.Gender</p>
+        <p><strong>Phone:</strong> @Model.PhoneNumber</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Insurance:</strong> @Model.InsuranceId</p>
 
-@if (Model != null)
-{
-    <p>Id: @Model.PatientId</p>
-    <p>Name: @Model.FullName</p>
-    <p>DOB: @Model.DateOfBirth.ToString("yyyy-MM-dd")</p>
-    <p>Gender: @Model.Gender</p>
-    <p>Phone: @Model.PhoneNumber</p>
-}
-else
-{
-    <p>Patient not found</p>
-}
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            Patient not found
+        </div>
+    }
 
-<p><a href="/Patient/PatientIndex">Back</a></p>
+    <a href="/Patient/Edit/@Model.PatientId"class="btn btn-sm btn-warning w-50">Edit</a>
+    <a href="/Patient/PatientIndex" class="btn btn-secondary w-50">Back</a>
+</div>

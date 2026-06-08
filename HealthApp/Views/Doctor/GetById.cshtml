@@ -5,19 +5,27 @@
 
 @model HealthApp.Models.Doctor
 
-<h2>Doctor Details</h2>
+<h2 class="mb-3">Doctor Details</h2>
 
-@if (Model != null)
-{
-    <p>@Model.FullName</p>
-    <p>@Model.Specialisation</p>
-    <p>@Model.DoctorPhoneNo</p>
-    <p>@Model.DoctorEmail</p>
-    <p>Status: @(Model.IsActive ? "Active" : "Inactive")</p>
-}
-else
-{
-    <p>Doctor not found</p>
-}
+<div class="card shadow p-4">
+    @if (Model != null)
+    {
+        <p><strong>Name:</strong> @Model.FullName</p>
+        <p><strong>Specialisation:</strong> @Model.Specialisation</p>
+        <p><strong>Phone:</strong> @Model.DoctorPhoneNo</p>
+        <p><strong>Email:</strong> @Model.DoctorEmail</p>
 
-<p><a href="/Doctor/DoctorIndex">Back</a></p>
+        <p>
+            <strong>Status:</strong>
+            <span class="badge @(Model.IsActive ? "badge-success" : "badge-danger")">
+                @(Model.IsActive ? "Active" : "Inactive")
+            </span>
+        </p>
+    }
+    else
+    {
+        <div class="alert alert-danger">Doctor not found</div>
+    }
+
+    <a href="/Doctor/DoctorIndex" class="btn btn-secondary mt-2">Back</a>
+</div>
