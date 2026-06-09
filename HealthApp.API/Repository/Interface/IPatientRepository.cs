@@ -1,4 +1,4 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +9,10 @@ namespace HealthApp.API.Repository.Interface
 {
     public interface IPatientRepository
     {
-        void Add(Patient patient);
         List<Patient> GetAll();
         Patient GetById(int id);
-        Patient UpdatePatient(int id, Patient patient);
+        void Add(Patient patient);
+        void UpdatePatient(int id, Patient patient);
+
     }
 }

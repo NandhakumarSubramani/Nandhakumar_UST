@@ -1,4 +1,5 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
+using HealthApp.API.Constant;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using System;
@@ -18,9 +19,6 @@ namespace HealthApp.API.Service.Impl
 
         public void AddDoctor(Doctor doctor)
         {
-            var doctors = _repo.GetAll();
-            doctor.IsActive = true;
-
             _repo.Add(doctor);
         }
 
@@ -39,8 +37,13 @@ namespace HealthApp.API.Service.Impl
 
         public List<Doctor> SearchBySpecialisation(SpecialisationType specialisation)
         {
-            var result = _repo.GetAll().Where(d => d.Specialisation == specialisation).ToList();
-            return result;
+
+            string spec = specialisation.ToString();
+
+            return _repo.GetAll()
+                .Where(d => d.Specialisation == spec ).ToList();
+             //.Where(d => d.Specialisation == specialisation && d.IsActive).ToList();
+
         }
         public void ChangeDoctorStatus(int id)
         {

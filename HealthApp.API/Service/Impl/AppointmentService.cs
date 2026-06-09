@@ -1,5 +1,6 @@
 ﻿using HealthApp.API.Constant;
-using HealthApp.API.Models;
+using HealthApp.API.Data;
+using HealthApp.API.Repository.Impl;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using System;
@@ -12,39 +13,44 @@ namespace HealthApp.API.Service.Impl
 {
     public class AppointmentService : IAppointmentService
     {
+        private readonly HealthAppDBEntities _db;
         private readonly IAppointmentRepository _repo;
+        private AppointmentRepository appointmentRepository;
 
-        public AppointmentService(IAppointmentRepository repo)
+        public AppointmentService(IAppointmentRepository repo, HealthAppDBEntities db)
         {
             _repo = repo;
+            _db= db;
         }
 
-        public Appointment BookAppointment(
-            Patient patient,
-            Doctor doctor,
-            DateTime date,
-            string slot)
+        public AppointmentService(AppointmentRepository appointmentRepository)
         {
-            if (date.Date < DateTime.Today)
+            this.appointmentRepository = appointmentRepository;
+        }
+
+        public void Add(Appointment appointments)
+        {
+            if (appointments.ScheduledDate < DateTime.Today)
             {
                 throw new Exception("Cannot book past date.");
             }
 
-            if (!doctor.IsActive)
+            var doctor = _db.Doctors.FirstOrDefault(d=>d.DoctorId == appointments.DoctorId);
+            if ((bool)!doctor.IsActive)
             {
                 throw new Exception("Doctor unavailable.");
             }
 
-            if (!TimeSlots.Slots.Contains(slot))
+            if (!TimeSlots.Slots.Contains(appointments.TimeSlot))
             {
                 throw new Exception("Invalid slot.");
             }
 
-            if (date.Date == DateTime.Today)
+            if (appointments.ScheduledDate == DateTime.Today)
             {
-                DateTime slotTime = DateTime.ParseExact(slot, "hh:mm tt", CultureInfo.InvariantCulture);
+                DateTime slotTime = DateTime.ParseExact(appointments.TimeSlot, "hh:mm tt", CultureInfo.InvariantCulture);
 
-                DateTime finalTime = date.Date + slotTime.TimeOfDay;
+                DateTime finalTime = appointments.ScheduledDate + slotTime.TimeOfDay;
 
                 if (finalTime < DateTime.Now)
                 {
@@ -52,8 +58,8 @@ namespace HealthApp.API.Service.Impl
                 }
             }
 
-            bool sameDoctorBooked = _repo.GetAll().Any(a => a.Patient.PatientId == patient.PatientId
-                && a.Doctor.DoctorId == doctor.DoctorId && a.ScheduledDate.Date == date.Date
+            bool sameDoctorBooked = _repo.GetAll().Any(a => a.Patient.PatientId == appointments.Patient.PatientId
+                && a.Doctor.DoctorId == appointments.Doctor.DoctorId && a.ScheduledDate.Date == appointments.ScheduledDate
                 && a.Status != AppointmentStatus.Cancelled);
 
             if (sameDoctorBooked)
@@ -62,17 +68,17 @@ namespace HealthApp.API.Service.Impl
             }
 
 
-            bool sameSlotBooked = _repo.GetAll().Any(a => a.Patient.PatientId == patient.PatientId
-                && a.ScheduledDate.Date == date.Date && a.TimeSlot == slot
-                && a.Status != AppointmentStatus.Cancelled);
+            bool sameSlotBooked = _repo.GetAll().Any(a => a.Patient.PatientId == appointments.Patient.PatientId
+                && a.ScheduledDate.Date == appointments.ScheduledDate && a.TimeSlot == appointments.TimeSlot
+                && a.Status != "Cancelled");
 
             if (sameSlotBooked)
             {
                 throw new Exception("You already have another appointment in this time slot.");
             }
 
-            bool alreadyBooked = _repo.GetAll().Any(a => a.Doctor.DoctorId == doctor.DoctorId
-                    && a.ScheduledDate.Date == date.Date && a.TimeSlot == slot
+            bool alreadyBooked = _repo.GetAll().Any(a => a.Doctor.DoctorId == appointments.Doctor.DoctorId
+                    && a.ScheduledDate.Date == appointments.ScheduledDate && a.TimeSlot == appointments.TimeSlot
                     && a.Status != AppointmentStatus.Cancelled);
 
             if (alreadyBooked)
@@ -82,20 +88,21 @@ namespace HealthApp.API.Service.Impl
 
             Appointment appointment = new Appointment
             {
-                AppointmentId = _repo.GetAll().Count + 1,
 
-                Patient = patient,
 
-                Doctor = doctor,
+                Patient = appointments.Patient,
 
-                ScheduledDate = date,
+                Doctor = appointments.Doctor,
 
-                TimeSlot = slot
+                ScheduledDate = appointments.ScheduledDate,
+
+                TimeSlot = appointments.TimeSlot,
+
+                Status = AppointmentStatus.Pending
             };
 
             _repo.Add(appointment);
 
-            return appointment;
         }
 
         public void CancelAppointment(int appointmentId, string reason)
@@ -120,7 +127,8 @@ namespace HealthApp.API.Service.Impl
 
             if (appointment != null)
             {
-                appointment.Cancel(reason);
+                appointment.Status = AppointmentStatus.Cancelled;
+                appointment.CancellationReason = reason;
             }
         }
 
@@ -247,7 +255,7 @@ namespace HealthApp.API.Service.Impl
                     "You have already confirmed this appointment");
             }
 
-            appointment.Confirm();
+            appointment.Status = AppointmentStatus.Confirmed;
         }
     }
 }

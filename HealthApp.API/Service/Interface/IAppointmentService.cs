@@ -1,4 +1,4 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,7 @@ namespace HealthApp.API.Service.Interface
 {
     public interface IAppointmentService
     {
-        Appointment BookAppointment(
-            Patient patient,
-            Doctor doctor,
-            DateTime date,
-            string slot);
+        void Add(Appointment appointment);
 
         void CancelAppointment(
             int appointmentId,

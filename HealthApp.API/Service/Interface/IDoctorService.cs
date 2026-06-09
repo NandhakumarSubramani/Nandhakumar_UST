@@ -1,4 +1,5 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Constant;
+using HealthApp.API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,6 @@ namespace HealthApp.API.Service.Interface
         void AddDoctor(Doctor doctor);
         List<Doctor> GetAllDoctors();
         Doctor GetDoctorById(int id);
-
         List<Doctor> SearchBySpecialisation(SpecialisationType specialisation);
         void ChangeDoctorStatus(int id);
     }

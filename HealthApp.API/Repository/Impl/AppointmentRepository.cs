@@ -1,5 +1,4 @@
-﻿using HealthApp.API.Database;
-using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,18 +9,23 @@ namespace HealthApp.API.Repository.Impl
 {
     public class AppointmentRepository : IAppointmentRepository
     {
+        private readonly HealthAppDBEntities _db;
 
         public void Add(Appointment appointment)
         {
-            AppointmentDb.Appointments.Add(appointment);
+            _db.Appointments.Add(appointment);
+            _db.SaveChanges();
         }
+
         public List<Appointment> GetAll()
         {
-            return AppointmentDb.Appointments;
+            return _db.Appointments.ToList();
+
         }
+
         public Appointment GetById(int id)
         {
-            return AppointmentDb.Appointments.FirstOrDefault(a => a.AppointmentId == id);
+            return _db.Appointments.FirstOrDefault(a => a.AppointmentId == id);
         }
     }
 }

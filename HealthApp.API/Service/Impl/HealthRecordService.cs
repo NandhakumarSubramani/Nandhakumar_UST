@@ -1,5 +1,4 @@
-﻿using HealthApp.API.Database;
-using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using System;
@@ -19,12 +18,14 @@ namespace HealthApp.API.Service.Impl
             _repo = repo;
         }
 
+
         public void AddRecord(HealthRecord record)
         {
-            var all = _repo.GetAll();
-            record.RecordId = all.Any()? all.Max(r => r.RecordId) + 1: 1;
+            if (record == null)
+                throw new Exception("Invalid record");
             _repo.Add(record);
         }
+
 
         public List<HealthRecord> GetAllRecords()
         {

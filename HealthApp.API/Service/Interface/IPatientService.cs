@@ -1,9 +1,9 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 namespace HealthApp.API.Service.Interface
 {
     public interface IPatientService
@@ -11,6 +11,6 @@ namespace HealthApp.API.Service.Interface
         void RegisterPatient(Patient patient);
         Patient GetPatientById(int id);
         List<Patient> GetAll();
-        string UpdatePatientById(int id,Patient patient);
+        void UpdatePatientById(int id, Patient patient);
     }
 }

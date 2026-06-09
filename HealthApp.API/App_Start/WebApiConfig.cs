@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace HealthApp.API
 {
@@ -11,17 +12,28 @@ namespace HealthApp.API
         {
             // Web API configuration and services
 
-            // Web API routes
+
+                  // Web API routes
             config.MapHttpAttributeRoutes();
+            var formatters = config.Formatters;
+            formatters.Remove(formatters.XmlFormatter);
 
 
-            config.MapHttpAttributeRoutes();
+            //config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
+
+            config.Formatters.JsonFormatter.SerializerSettings.Formatting =
+                            Newtonsoft.Json.Formatting.Indented;
+
         }
     }
 }

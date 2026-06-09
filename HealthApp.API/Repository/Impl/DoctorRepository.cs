@@ -1,5 +1,4 @@
-﻿using HealthApp.API.Database;
-using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,20 +9,22 @@ namespace HealthApp.API.Repository.Impl
 {
     public class DoctorRepository : IDoctorRepository
     {
+        private readonly HealthAppDBEntities _db;
 
         public void Add(Doctor doctor)
         {
-            DoctorDb.Doctors.Add(doctor);
+            _db.Doctors.Add(doctor);
+            _db.SaveChanges();
         }
 
         public List<Doctor> GetAll()
         {
-            return DoctorDb.Doctors;
+            return _db.Doctors.ToList();
         }
 
         public Doctor GetById(int id)
         {
-            var doctor = DoctorDb.Doctors
+            var doctor = _db.Doctors
                 .FirstOrDefault(d => d.DoctorId == id);
 
             return doctor;
@@ -31,11 +32,12 @@ namespace HealthApp.API.Repository.Impl
 
         public void Update(Doctor doctor)
         {
-            var existingDoctor = DoctorDb.Doctors.FirstOrDefault(d => d.DoctorId == doctor.DoctorId);
+            var existingDoctor = _db.Doctors.FirstOrDefault(d => d.DoctorId == doctor.DoctorId);
             if (existingDoctor != null)
             {
                 existingDoctor.IsActive = doctor.IsActive;
             }
+            _db.SaveChanges();
         }
     }
 }

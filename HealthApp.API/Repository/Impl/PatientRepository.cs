@@ -1,5 +1,4 @@
-﻿using HealthApp.API.Database;
-using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,28 +10,34 @@ namespace HealthApp.API.Repository.Impl
     public class PatientRepository : IPatientRepository
     {
 
+        private readonly HealthAppDBEntities _db;
+        public PatientRepository(HealthAppDBEntities context)
+        {
+            _db = context;
+        }
+
         public void Add(Patient patient)
         {
-            PatientDb.Patients.Add(patient);
+            _db.Patients.Add(patient);
+            _db.SaveChanges();
         }
 
         public List<Patient> GetAll()
         {
-            return PatientDb.Patients;
+            return _db.Patients.ToList();
         }
 
         public Patient GetById(int id)
         {
-            return PatientDb.Patients.FirstOrDefault(pa => pa.PatientId == id);
+            return _db.Patients.FirstOrDefault(pa => pa.PatientId == id);
         }
-
-        public Patient UpdatePatient(int id, Patient patient)
+        public void UpdatePatient(int id, Patient patient)
         {
-            var p = PatientDb.Patients.FirstOrDefault(pa => pa.PatientId == id);
+            var p = _db.Patients.FirstOrDefault(pa => pa.PatientId == id);
 
             if (p == null)
             {
-                return null;
+                return;
             }
 
             p.FullName = patient.FullName;
@@ -42,7 +47,7 @@ namespace HealthApp.API.Repository.Impl
             p.Email = patient.Email;
             p.InsuranceId = patient.InsuranceId;
 
-            return p;
+            _db.SaveChanges();
         }
     }
 }

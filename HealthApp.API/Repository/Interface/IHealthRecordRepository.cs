@@ -1,4 +1,4 @@
-﻿using HealthApp.API.Models;
+﻿using HealthApp.API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
