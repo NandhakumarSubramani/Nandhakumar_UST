@@ -1,5 +1,8 @@
-﻿using HealthApp.API.Data;
+﻿using AutoMapper;
 using HealthApp.API.Constant;
+using HealthApp.API.Data;
+using HealthApp.API.DTOs;
+using HealthApp.API.Mapping;
 using HealthApp.API.Repository.Impl;
 using HealthApp.API.Service.Impl;
 using System;
@@ -9,21 +12,38 @@ using System.Web.Http;
 namespace HealthApp.API.Controllers
 {
     [RoutePrefix("api/doctors")]
+
     public class DoctorApiController : ApiController
     {
         private readonly DoctorService _service;
-
+        private readonly IMapper _mapper;
         public DoctorApiController()
         {
-            _service = new DoctorService(new DoctorRepository());
+            var db = new HealthAppDBEntities();
+            _service = new DoctorService(new DoctorRepository(db));
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>(); });
+
+            _mapper = config.CreateMapper();
+
         }
+
+
 
         // ✅ GET ALL
         [HttpGet]
         [Route("")]
         public IHttpActionResult GetAll()
         {
-            return Ok(_service.GetAllDoctors());
+
+            var doctors = _service.GetAllDoctors();
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+
+            return Ok(result);
+
+           // return Ok(_service.GetAllDoctors());
         }
 
         // ✅ GET BY ID

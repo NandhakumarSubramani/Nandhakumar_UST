@@ -10,6 +10,10 @@ namespace HealthApp.API.Repository.Impl
     public class DoctorRepository : IDoctorRepository
     {
         private readonly HealthAppDBEntities _db;
+        public DoctorRepository(HealthAppDBEntities context)
+        {
+            _db = context;
+        }
 
         public void Add(Doctor doctor)
         {
