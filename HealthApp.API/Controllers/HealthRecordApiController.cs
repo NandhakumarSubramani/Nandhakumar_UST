@@ -1,8 +1,7 @@
-﻿using HealthApp.API.Repository.Impl;
-using HealthApp.API.Service.Impl;
-using HealthApp.API.Service.Interface;
+﻿using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace HealthApp.API.Controllers
@@ -17,39 +16,41 @@ namespace HealthApp.API.Controllers
             _service = service;
         }
 
-
-        // GET ALL
+        // ✅ GET ALL
         [HttpGet]
         [Route("")]
-        public IHttpActionResult GetAll()
+        public async Task<IHttpActionResult> GetAll()
         {
-            return Ok(_service.GetAllRecords());
+            var data = await _service.GetAllRecords();
+            return Ok(data);
         }
 
-        // GET BY PATIENT
+        // ✅ GET BY PATIENT
         [HttpGet]
         [Route("patient/{id}")]
-        public IHttpActionResult GetByPatient(int id)
+        public async Task<IHttpActionResult> GetByPatient(int id)
         {
-            return Ok(_service.GetPatientRecords(id));
+            var data = await _service.GetPatientRecords(id);
+            return Ok(data);
         }
 
-        // FILTER
+        // ✅ FILTER
         [HttpGet]
         [Route("filter")]
-        public IHttpActionResult GetByDoctorAndPatient(int doctorId, int patientId)
+        public async Task<IHttpActionResult> GetByDoctorAndPatient(int doctorId, int patientId)
         {
-            return Ok(_service.GetHealthRecordsByDoctor(doctorId, patientId));
+            var data = await _service.GetHealthRecordsByDoctor(doctorId, patientId);
+            return Ok(data);
         }
 
-        // CREATE
+        // ✅ CREATE
         [HttpPost]
         [Route("")]
-        public IHttpActionResult Create(HealthRecordDto dto)
+        public async Task<IHttpActionResult> Create(HealthRecordDto dto)
         {
             try
             {
-                _service.AddRecord(dto);
+                await _service.AddRecord(dto);
                 return Ok("Created Successfully");
             }
             catch (Exception ex)

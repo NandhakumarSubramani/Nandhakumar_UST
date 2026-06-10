@@ -5,7 +5,9 @@ using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Impl
 {
@@ -20,8 +22,8 @@ namespace HealthApp.API.Service.Impl
             _mapper = mapper;
         }
 
-        // CREATE
-        public void RegisterPatient(PatientDto dto)
+        // ✅ CREATE
+        public async Task RegisterPatient(PatientDto dto)
         {
             if (dto == null)
                 throw new Exception("Patient cannot be null");
@@ -32,7 +34,8 @@ namespace HealthApp.API.Service.Impl
             if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new Exception("Email is required");
 
-            var patients = _repo.GetAll();
+            // ✅ async DB call
+            var patients = await _repo.GetAllAsync();
 
             bool emailExists = patients.Any(p =>
                 p.Email.ToLower() == dto.Email.ToLower());
@@ -41,23 +44,22 @@ namespace HealthApp.API.Service.Impl
                 throw new Exception("Email already exists");
 
             var patient = _mapper.Map<Patient>(dto);
-
             patient.CreatedDate = DateTime.Now;
 
-            _repo.Add(patient);
+            await _repo.AddAsync(patient);
         }
 
-        // GET ALL
-        public List<PatientDto> GetAll()
+        // ✅ GET ALL
+        public async Task<List<PatientDto>> GetAll()
         {
-            var list = _repo.GetAll();
+            var list = await _repo.GetAllAsync();
             return _mapper.Map<List<PatientDto>>(list);
         }
 
-        // GET BY ID
-        public PatientDto GetPatientById(int id)
+        // ✅ GET BY ID
+        public async Task<PatientDto> GetPatientById(int id)
         {
-            var patient = _repo.GetById(id);
+            var patient = await _repo.GetByIdAsync(id);
 
             if (patient == null)
                 throw new Exception($"Patient with id {id} not found");
@@ -65,19 +67,18 @@ namespace HealthApp.API.Service.Impl
             return _mapper.Map<PatientDto>(patient);
         }
 
-        // UPDATE
-        public void UpdatePatientById(int id, PatientDto dto)
+        // ✅ UPDATE
+        public async Task UpdatePatientById(int id, PatientDto dto)
         {
-            var existingPatient = _repo.GetById(id);
+            var existingPatient = await _repo.GetByIdAsync(id);
 
             if (existingPatient == null)
                 throw new Exception($"Patient with id {id} not found");
 
             var patient = _mapper.Map<Patient>(dto);
-
             patient.PatientId = id;
 
-            _repo.UpdatePatient(id, patient);
+            await _repo.UpdatePatientAsync(id, patient);
         }
     }
 }

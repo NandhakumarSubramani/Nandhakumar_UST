@@ -1,47 +1,53 @@
 ﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
-using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Repository.Impl
 {
     public class DoctorRepository : IDoctorRepository
     {
         private readonly HealthAppDBEntities _db;
+
         public DoctorRepository(HealthAppDBEntities context)
         {
             _db = context;
         }
 
-        public void Add(Doctor doctor)
+        // ✅ ADD
+        public async Task AddAsync(Doctor doctor)
         {
             _db.Doctors.Add(doctor);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public List<Doctor> GetAll()
+        // ✅ GET ALL
+        public async Task<List<Doctor>> GetAllAsync()
         {
-            return _db.Doctors.ToList();
+            return await _db.Doctors.ToListAsync();
         }
 
-        public Doctor GetById(int id)
+        // ✅ GET BY ID
+        public async Task<Doctor> GetByIdAsync(int id)
         {
-            var doctor = _db.Doctors
-                .FirstOrDefault(d => d.DoctorId == id);
-
-            return doctor;
+            return await _db.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == id);
         }
 
-        public void Update(Doctor doctor)
+        // ✅ UPDATE
+        public async Task UpdateAsync(Doctor doctor)
         {
-            var existingDoctor = _db.Doctors.FirstOrDefault(d => d.DoctorId == doctor.DoctorId);
+            var existingDoctor = await _db.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == doctor.DoctorId);
+
             if (existingDoctor != null)
             {
                 existingDoctor.IsActive = doctor.IsActive;
             }
-            _db.SaveChanges();
+
+            await _db.SaveChangesAsync();
         }
     }
 }

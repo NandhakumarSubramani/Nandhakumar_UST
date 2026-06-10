@@ -1,7 +1,8 @@
 ﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Repository.Impl
 {
@@ -14,15 +15,17 @@ namespace HealthApp.API.Repository.Impl
             _db = db;
         }
 
-        public void Add(HealthRecord record)
+        // ✅ ADD (ASYNC)
+        public async Task AddAsync(HealthRecord record)
         {
             _db.HealthRecords.Add(record);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public List<HealthRecord> GetAll()
+        // ✅ GET ALL (ASYNC)
+        public async Task<List<HealthRecord>> GetAllAsync()
         {
-            return _db.HealthRecords.ToList();
+            return await _db.HealthRecords.ToListAsync();
         }
     }
 }

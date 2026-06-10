@@ -5,34 +5,38 @@ using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace HealthApp.API.Controllers
 {
+    [RoutePrefix("api/patients")]
     public class PatientApiController : ApiController
     {
 
         private readonly IPatientService _service;
+
         public PatientApiController(IPatientService service)
         {
             _service = service;
         }
 
-
-        // GET all patients
+        // ✅ GET all patients
         [HttpGet]
-        public IEnumerable<PatientDto> Get()
+        [Route("")]
+        public async Task<IEnumerable<PatientDto>> Get()
         {
-            return _service.GetAll();
+            return await _service.GetAll();
         }
 
-        // GET patient by ID
+        // ✅ GET patient by ID
         [HttpGet]
-        public IHttpActionResult GetById(int id)
+        [Route("{id}")]
+        public async Task<IHttpActionResult> GetById(int id)
         {
             try
             {
-                var patient = _service.GetPatientById(id);
+                var patient = await _service.GetPatientById(id);
                 return Ok(patient);
             }
             catch (Exception ex)
@@ -41,13 +45,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // CREATE new patient
+        // ✅ CREATE new patient
         [HttpPost]
-        public IHttpActionResult Post(PatientDto dto)
+        [Route("")]
+        public async Task<IHttpActionResult> Post(PatientDto dto)
         {
             try
             {
-                _service.RegisterPatient(dto);
+                await _service.RegisterPatient(dto);
                 return Ok("Patient registered successfully");
             }
             catch (Exception ex)
@@ -56,13 +61,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // UPDATE patient
+        // ✅ UPDATE patient
         [HttpPut]
-        public IHttpActionResult Put(int id, PatientDto dto)
+        [Route("{id}")]
+        public async Task<IHttpActionResult> Put(int id, PatientDto dto)
         {
             try
             {
-                _service.UpdatePatientById(id, dto);
+                await _service.UpdatePatientById(id, dto);
                 return Ok("Patient updated successfully");
             }
             catch (Exception ex)
@@ -70,5 +76,6 @@ namespace HealthApp.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
     }
 }

@@ -1,17 +1,19 @@
 ﻿using AutoMapper;
-using HealthApp.Shared.Constant;
 using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constant;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Impl
 {
     public class DoctorService : IDoctorService
-    {
+    { 
         private readonly IDoctorRepository _repo;
         private readonly IMapper _mapper;
 
@@ -21,34 +23,29 @@ namespace HealthApp.API.Service.Impl
             _mapper = mapper;
         }
 
-        // CREATE
-
-
-        public void AddDoctor(DoctorDto dto)
+        // ✅ CREATE
+        public async Task AddDoctor(DoctorDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.FullName))
                 throw new Exception("Doctor name is required");
 
             var doctor = _mapper.Map<Doctor>(dto);
-
             doctor.IsActive = true;
 
-            _repo.Add(doctor);
+            await _repo.AddAsync(doctor);
         }
 
-
-
-        // GET ALL
-        public List<DoctorDto> GetAllDoctors()
+        // ✅ GET ALL
+        public async Task<List<DoctorDto>> GetAllDoctors()
         {
-            var list = _repo.GetAll();
+            var list = await _repo.GetAllAsync();
             return _mapper.Map<List<DoctorDto>>(list);
         }
 
-        // GET BY ID
-        public DoctorDto GetDoctorById(int id)
+        // ✅ GET BY ID
+        public async Task<DoctorDto> GetDoctorById(int id)
         {
-            var doctor = _repo.GetById(id);
+            var doctor = await _repo.GetByIdAsync(id);
 
             if (doctor == null)
                 throw new Exception($"Doctor with id {id} not found");
@@ -56,28 +53,31 @@ namespace HealthApp.API.Service.Impl
             return _mapper.Map<DoctorDto>(doctor);
         }
 
-        // SEARCH
-        public List<DoctorDto> SearchBySpecialisation(SpecialisationType specialisation)
+        // ✅ SEARCH
+        public async Task<List<DoctorDto>> SearchBySpecialisation(SpecialisationType specialisation)
         {
             string spec = specialisation.ToString();
 
-            var result = _repo.GetAll()
-                              .Where(d => d.Specialisation == spec)
-                              .ToList();
+            var list = await _repo.GetAllAsync();
+
+            var result = list
+                .Where(d => d.Specialisation == spec)
+                .ToList();
 
             return _mapper.Map<List<DoctorDto>>(result);
         }
 
-        // TOGGLE STATUS
-        public void ChangeDoctorStatus(int id)
+        // ✅ TOGGLE STATUS
+        public async Task ChangeDoctorStatus(int id)
         {
-            var doctor = _repo.GetById(id);
+            var doctor = await _repo.GetByIdAsync(id);
 
             if (doctor == null)
                 throw new Exception("Doctor not found");
 
             doctor.IsActive = !(doctor.IsActive ?? false);
-            _repo.Update(doctor);
+
+            await _repo.UpdateAsync(doctor);
         }
     }
 }

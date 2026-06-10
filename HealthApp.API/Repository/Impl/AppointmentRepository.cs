@@ -1,9 +1,9 @@
 ﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
-using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Repository.Impl
 {
@@ -16,27 +16,30 @@ namespace HealthApp.API.Repository.Impl
             _db = db;
         }
 
-        public void Add(Appointment appointment)
+        // ✅ ADD
+        public async Task AddAsync(Appointment appointment)
         {
             _db.Appointments.Add(appointment);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync(); 
         }
 
-        public void Save()
+        // ✅ SAVE
+        public async Task SaveAsync()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync(); 
         }
 
-
-        public List<Appointment> GetAll()
+        // ✅ GET ALL
+        public async Task<List<Appointment>> GetAllAsync()
         {
-            return _db.Appointments.ToList();
-
+            return await _db.Appointments.ToListAsync(); 
         }
 
-        public Appointment GetById(int id)
+        // ✅ GET BY ID
+        public async Task<Appointment> GetByIdAsync(int id)
         {
-            return _db.Appointments.FirstOrDefault(a => a.AppointmentId == id);
+            return await _db.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == id); 
         }
     }
 }

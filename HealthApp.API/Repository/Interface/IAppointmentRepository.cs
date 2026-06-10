@@ -1,17 +1,18 @@
-﻿using HealthApp.API.Data;
-using System;
+﻿
+using HealthApp.API.Data;
+using HealthApp.API.Repository.Interface;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
 namespace HealthApp.API.Repository.Interface
 {
     public interface IAppointmentRepository
-    {
-        void Add(Appointment appointment);
-        List<Appointment> GetAll();
-        Appointment GetById(int id);
-        void Save();
-    }
+{
+    Task AddAsync(Appointment appointment);
+
+    Task<List<Appointment>> GetAllAsync();
+
+    Task<Appointment> GetByIdAsync(int id);
+
+    Task SaveAsync();
+}
 }

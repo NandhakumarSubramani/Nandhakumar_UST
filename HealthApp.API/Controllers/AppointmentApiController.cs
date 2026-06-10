@@ -1,16 +1,15 @@
-﻿using HealthApp.API.Repository.Impl;
-using HealthApp.API.Service.Impl;
-using HealthApp.API.Service.Interface;
+﻿using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace HealthApp.API.Controllers
 {
+    //[RoutePrefix("api/appointments")]
     public class AppointmentApiController : ApiController
     {
-
         private readonly IAppointmentService _service;
 
         public AppointmentApiController(IAppointmentService service)
@@ -18,23 +17,22 @@ namespace HealthApp.API.Controllers
             _service = service;
         }
 
-
-        // GET all
+        // ✅ GET ALL
         [HttpGet]
         [Route("api/appointments")]
-        public IEnumerable<AppointmentDto> Get()
+        public async Task<IEnumerable<AppointmentDto>> Get()
         {
-            return _service.GetAllAppointments();
+            return await _service.GetAllAppointments();
         }
 
-        // GET by ID
+        // ✅ GET BY ID
         [HttpGet]
         [Route("api/appointments/{id}")]
-        public IHttpActionResult GetById(int id)
+        public async Task<IHttpActionResult> GetById(int id)
         {
             try
             {
-                var data = _service.GetAppointmentById(id);
+                var data = await _service.GetAppointmentById(id);
                 return Ok(data);
             }
             catch
@@ -43,14 +41,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // CREATE
+        // ✅ CREATE
         [HttpPost]
         [Route("api/appointments")]
-        public IHttpActionResult Post(AppointmentDto dto)
+        public async Task<IHttpActionResult> Post(AppointmentDto dto)
         {
             try
             {
-                _service.Add(dto);
+                await _service.Add(dto);
                 return Ok("Appointment created successfully");
             }
             catch (Exception ex)
@@ -59,14 +57,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // CANCEL
+        // ✅ CANCEL
         [HttpPut]
         [Route("api/appointments/{id}/cancel")]
-        public IHttpActionResult Cancel(int id, string reason)
+        public async Task<IHttpActionResult> Cancel(int id, string reason)
         {
             try
             {
-                _service.CancelAppointment(id, reason);
+                await _service.CancelAppointment(id, reason);
                 return Ok("Appointment cancelled");
             }
             catch (Exception ex)
@@ -75,14 +73,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // CONFIRM
+        // ✅ CONFIRM
         [HttpPut]
         [Route("api/appointments/{id}/confirm")]
-        public IHttpActionResult Confirm(int id)
+        public async Task<IHttpActionResult> Confirm(int id)
         {
             try
             {
-                _service.ConfirmAppointment(id);
+                await _service.ConfirmAppointment(id);
                 return Ok("Appointment confirmed");
             }
             catch (Exception ex)
@@ -91,14 +89,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // COMPLETE
+        // ✅ COMPLETE
         [HttpPut]
         [Route("api/appointments/{id}/complete")]
-        public IHttpActionResult Complete(int id)
+        public async Task<IHttpActionResult> Complete(int id)
         {
             try
             {
-                _service.CompleteAppointment(id);
+                await _service.CompleteAppointment(id);
                 return Ok("Appointment completed");
             }
             catch (Exception ex)
@@ -106,6 +104,5 @@ namespace HealthApp.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }

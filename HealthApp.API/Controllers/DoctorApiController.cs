@@ -1,11 +1,9 @@
-﻿using HealthApp.Shared.Constant;
-using HealthApp.API.Data;
-using HealthApp.API.Repository.Impl;
-using HealthApp.API.Service.Impl;
-using HealthApp.API.Service.Interface;
+﻿using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constant;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace HealthApp.API.Controllers
@@ -13,30 +11,29 @@ namespace HealthApp.API.Controllers
     [RoutePrefix("api/doctors")]
     public class DoctorApiController : ApiController
     {
-
         private readonly IDoctorService _service;
+
         public DoctorApiController(IDoctorService service)
         {
             _service = service;
         }
 
-
-        // GET all doctors
+        // ✅ GET all doctors
         [HttpGet]
         [Route("")]
-        public IEnumerable<DoctorDto> GetAll()
+        public async Task<IEnumerable<DoctorDto>> GetAll()
         {
-            return _service.GetAllDoctors();
+            return await _service.GetAllDoctors();
         }
 
-        // GET doctor by ID
+        // ✅ GET doctor by ID
         [HttpGet]
         [Route("{id}")]
-        public IHttpActionResult GetById(int id)
+        public async Task<IHttpActionResult> GetById(int id)
         {
             try
             {
-                var doctor = _service.GetDoctorById(id);
+                var doctor = await _service.GetDoctorById(id);
                 return Ok(doctor);
             }
             catch
@@ -45,14 +42,14 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // CREATE doctor
+        // ✅ CREATE doctor
         [HttpPost]
         [Route("")]
-        public IHttpActionResult Create(DoctorDto dto)
+        public async Task<IHttpActionResult> Create(DoctorDto dto)
         {
             try
             {
-                _service.AddDoctor(dto);
+                await _service.AddDoctor(dto);
                 return Ok("Doctor added successfully");
             }
             catch (Exception ex)
@@ -61,23 +58,23 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // SEARCH by specialisation
+        // ✅ SEARCH by specialisation
         [HttpGet]
         [Route("specialisation/{type}")]
-        public IHttpActionResult SearchBySpecialisation(SpecialisationType type)
+        public async Task<IHttpActionResult> SearchBySpecialisation(SpecialisationType type)
         {
-            var result = _service.SearchBySpecialisation(type);
+            var result = await _service.SearchBySpecialisation(type);
             return Ok(result);
         }
 
-        // TOGGLE active/inactive
+        // ✅ TOGGLE active/inactive
         [HttpPut]
         [Route("{id}/toggle")]
-        public IHttpActionResult ToggleStatus(int id)
+        public async Task<IHttpActionResult> ToggleStatus(int id)
         {
             try
             {
-                _service.ChangeDoctorStatus(id);
+                await _service.ChangeDoctorStatus(id);
                 return Ok("Doctor status updated");
             }
             catch (Exception ex)

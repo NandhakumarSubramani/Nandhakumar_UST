@@ -6,9 +6,9 @@ using HealthApp.Shared.Constant;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Impl
@@ -28,13 +28,14 @@ namespace HealthApp.API.Service.Impl
             _mapper = mapper;
         }
 
-        // CREATE
-        public void Add(AppointmentDto dto)
+        // ✅ CREATE
+        public async Task Add(AppointmentDto dto)
         {
             if (dto.ScheduledDate < DateTime.Today)
                 throw new Exception("Cannot book past date.");
 
-            var doctor = _db.Doctors.FirstOrDefault(d => d.DoctorId == dto.DoctorId);
+            var doctor = await _db.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == dto.DoctorId);
 
             if (doctor == null || !(doctor.IsActive ?? false))
                 throw new Exception("Doctor unavailable.");
@@ -42,11 +43,13 @@ namespace HealthApp.API.Service.Impl
             if (!TimeSlots.Slots.Contains(dto.TimeSlot))
                 throw new Exception("Invalid slot.");
 
+            // ✅ Time validation
             if (dto.ScheduledDate == DateTime.Today)
             {
-                DateTime slotTime = DateTime.ParseExact(dto.TimeSlot,
-                                                        "hh:mm tt",
-                                                        CultureInfo.InvariantCulture);
+                DateTime slotTime = DateTime.ParseExact(
+                    dto.TimeSlot,
+                    "hh:mm tt",
+                    CultureInfo.InvariantCulture);
 
                 DateTime finalTime = dto.ScheduledDate + slotTime.TimeOfDay;
 
@@ -54,11 +57,13 @@ namespace HealthApp.API.Service.Impl
                     throw new Exception("Slot already over.");
             }
 
-            bool alreadyBooked = _repo.GetAll().Any(a =>
+            // ✅ Check duplicate booking (DB-side)
+            bool alreadyBooked = await _db.Appointments.AnyAsync(a =>
                 a.DoctorId == dto.DoctorId &&
-                a.ScheduledDate.Date == dto.ScheduledDate.Date &&
+                a.ScheduledDate == dto.ScheduledDate &&
                 a.TimeSlot == dto.TimeSlot &&
-                a.Status != AppointmentStatus.Cancelled);
+                a.Status != AppointmentStatus.Cancelled
+            );
 
             if (alreadyBooked)
                 throw new Exception("Slot already booked.");
@@ -66,20 +71,22 @@ namespace HealthApp.API.Service.Impl
             var appointment = _mapper.Map<Appointment>(dto);
             appointment.Status = AppointmentStatus.Pending;
 
-            _repo.Add(appointment);
+            _db.Appointments.Add(appointment);
+            await _db.SaveChangesAsync();
         }
 
-        // GET ALL
-        public List<AppointmentDto> GetAllAppointments()
+        // ✅ GET ALL
+        public async Task<List<AppointmentDto>> GetAllAppointments()
         {
-            var list = _repo.GetAll();
+            var list = await _db.Appointments.ToListAsync();
             return _mapper.Map<List<AppointmentDto>>(list);
         }
 
-        // GET BY ID
-        public AppointmentDto GetAppointmentById(int id)
+        // ✅ GET BY ID
+        public async Task<AppointmentDto> GetAppointmentById(int id)
         {
-            var appointment = _repo.GetById(id);
+            var appointment = await _db.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
             if (appointment == null)
                 throw new Exception($"Appointment with id {id} not found");
@@ -87,11 +94,11 @@ namespace HealthApp.API.Service.Impl
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        // CANCEL
-        public void CancelAppointment(int appointmentId, string reason)
+        // ✅ CANCEL
+        public async Task CancelAppointment(int appointmentId, string reason)
         {
-            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
-
+            var appointment = await _db.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 throw new Exception("Appointment not found");
@@ -102,16 +109,17 @@ namespace HealthApp.API.Service.Impl
             if (appointment.Status == AppointmentStatus.Completed)
                 throw new Exception("Cannot cancel completed appointment");
 
-          
-            appointment.Status = "Cancelled";
+            appointment.Status = AppointmentStatus.Cancelled;
             appointment.CancellationReason = reason;
-            _db.SaveChanges();
+
+            await _db.SaveChangesAsync();
         }
 
-        // CONFIRM
-        public void ConfirmAppointment(int appointmentId)
+        // ✅ CONFIRM
+        public async Task ConfirmAppointment(int appointmentId)
         {
-            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+            var appointment = await _db.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 throw new Exception("Appointment not found");
@@ -126,23 +134,25 @@ namespace HealthApp.API.Service.Impl
                 throw new Exception("Already confirmed");
 
             appointment.Status = AppointmentStatus.Confirmed;
-            _db.SaveChanges();
+
+            await _db.SaveChangesAsync();
         }
 
-        // PATIENT APPOINTMENTS
-        public List<AppointmentDto> GetAppointmentsByPatient(int patientId)
+        // ✅ PATIENT APPOINTMENTS
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatient(int patientId)
         {
-            var list = _repo.GetAll()
-                            .Where(a => a.PatientId == patientId)
-                            .OrderBy(a => a.ScheduledDate)
-                            .ThenBy(a => a.TimeSlot)
-                            .ToList();
+            var list = await _db.Appointments
+                .Where(a => a.PatientId == patientId)
+                .OrderBy(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToListAsync();
 
             return _mapper.Map<List<AppointmentDto>>(list);
         }
 
-        // DOCTOR UPCOMING
-        public List<AppointmentDto> GetUpcomingAppointmentsByDoctor(int doctorId, DateTime fromDate, DateTime toDate)
+        // ✅ DOCTOR UPCOMING
+        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctor(
+            int doctorId, DateTime fromDate, DateTime toDate)
         {
             if (fromDate < DateTime.Today)
                 throw new Exception("From date cannot be in the past");
@@ -150,33 +160,33 @@ namespace HealthApp.API.Service.Impl
             if (fromDate > toDate)
                 throw new Exception("Invalid date range");
 
-            var list = _repo.GetAll()
+            var list = await _db.Appointments
                 .Where(a => a.DoctorId == doctorId &&
                             a.ScheduledDate >= fromDate &&
                             a.ScheduledDate <= toDate &&
                             a.Status == AppointmentStatus.Confirmed)
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)
-                .ToList();
+                .ToListAsync();
 
             return _mapper.Map<List<AppointmentDto>>(list);
         }
 
-        // DOCTOR PENDING
-        public List<AppointmentDto> GetPendingAppointmentsByDoctor(int doctorId)
+        // ✅ DOCTOR PENDING
+        public async Task<List<AppointmentDto>> GetPendingAppointmentsByDoctor(int doctorId)
         {
-            var list = _repo.GetAll()
+            var list = await _db.Appointments
                 .Where(a => a.DoctorId == doctorId &&
                             a.Status == AppointmentStatus.Pending)
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)
-                .ToList();
+                .ToListAsync();
 
             return _mapper.Map<List<AppointmentDto>>(list);
         }
 
-        // CHECK AVAILABILITY
-        public List<string> CheckDoctorAvailability(int doctorId, DateTime date)
+        // ✅ CHECK AVAILABILITY
+        public async Task<List<string>> CheckDoctorAvailability(int doctorId, DateTime date)
         {
             if (date < DateTime.Today)
                 throw new Exception("Date already passed");
@@ -184,25 +194,28 @@ namespace HealthApp.API.Service.Impl
             if (date > DateTime.Today.AddDays(90))
                 throw new Exception("Only next 90 days allowed");
 
-            var bookedSlots = _repo.GetAll()
+            var bookedSlots = await _db.Appointments
                 .Where(a => a.DoctorId == doctorId &&
-                            a.ScheduledDate.Date == date.Date &&
+                            a.ScheduledDate == date &&
                             a.Status != AppointmentStatus.Cancelled)
                 .Select(a => a.TimeSlot)
+                .ToListAsync();
+
+            var availableSlots = TimeSlots.Slots
+                .Except(bookedSlots)
                 .ToList();
 
-            var availableSlots = TimeSlots.Slots.Except(bookedSlots).ToList();
-
-            if (availableSlots.Count == 0)
+            if (!availableSlots.Any())
                 throw new Exception("No slots available");
 
             return availableSlots;
         }
 
-        // COMPLETE
-        public void CompleteAppointment(int appointmentId)
+        // ✅ COMPLETE
+        public async Task CompleteAppointment(int appointmentId)
         {
-            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+            var appointment = await _db.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 throw new Exception("Appointment not found");
@@ -212,8 +225,7 @@ namespace HealthApp.API.Service.Impl
 
             appointment.Status = AppointmentStatus.Completed;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
-
     }
 }

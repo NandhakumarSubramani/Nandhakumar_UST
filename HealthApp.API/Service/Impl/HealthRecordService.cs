@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
-using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
+using HealthApp.API.Data;
 
 namespace HealthApp.API.Service.Impl
 {
@@ -20,43 +22,48 @@ namespace HealthApp.API.Service.Impl
             _mapper = mapper;
         }
 
-        // CREATE
-        public void AddRecord(HealthRecordDto dto)
+        // ✅ CREATE
+        public async Task AddRecord(HealthRecordDto dto)
         {
             if (dto == null)
                 throw new Exception("Invalid record");
 
             var record = _mapper.Map<HealthRecord>(dto);
-            _repo.Add(record);
+
+            await _repo.AddAsync(record);
         }
 
-        // GET ALL
-        public List<HealthRecordDto> GetAllRecords()
+        // ✅ GET ALL
+        public async Task<List<HealthRecordDto>> GetAllRecords()
         {
-            var list = _repo.GetAll();
+            var list = await _repo.GetAllAsync();
             return _mapper.Map<List<HealthRecordDto>>(list);
         }
 
-        // GET BY PATIENT
-        public List<HealthRecordDto> GetPatientRecords(int patientId)
+        // ✅ GET BY PATIENT
+        public async Task<List<HealthRecordDto>> GetPatientRecords(int patientId)
         {
-            var list = _repo.GetAll()
-                            .Where(r => r.PatientId == patientId)
-                            .ToList();
+            var list = await _repo.GetAllAsync();
 
-            return _mapper.Map<List<HealthRecordDto>>(list);
+            var filtered = list
+                .Where(r => r.PatientId == patientId)
+                .ToList();
+
+            return _mapper.Map<List<HealthRecordDto>>(filtered);
         }
 
-        // FILTER BY DOCTOR + PATIENT
-        public List<HealthRecordDto> GetHealthRecordsByDoctor(int doctorId, int patientId)
+        // ✅ FILTER BY DOCTOR + PATIENT
+        public async Task<List<HealthRecordDto>> GetHealthRecordsByDoctor(int doctorId, int patientId)
         {
-            var list = _repo.GetAll()
-                            .Where(r => r.DoctorId == doctorId &&
-                                        r.PatientId == patientId)
-                            .OrderByDescending(r => r.VisitDate)
-                            .ToList();
+            var list = await _repo.GetAllAsync();
 
-            return _mapper.Map<List<HealthRecordDto>>(list);
+            var filtered = list
+                .Where(r => r.DoctorId == doctorId &&
+                            r.PatientId == patientId)
+                .OrderByDescending(r => r.VisitDate)
+                .ToList();
+
+            return _mapper.Map<List<HealthRecordDto>>(filtered);
         }
     }
 }

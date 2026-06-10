@@ -8,7 +8,7 @@ namespace HealthApp.Service.Impl
 {
     public class PatientApiService : IPatientApiService
     {
-        private readonly string baseUrl = "https://localhost:44339/api/PatientApi";
+        private readonly string baseUrl = "https://localhost:44339/api/patients";
 
         public async Task<List<PatientDto>> GetAll()
         {

@@ -1,19 +1,17 @@
-﻿using HealthApp.API.Data;
-using HealthApp.Shared.DTOs;
-using System;
+﻿using HealthApp.Shared.DTOs;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 namespace HealthApp.API.Service.Interface
 {
-
     public interface IPatientService
     {
-        void RegisterPatient(PatientDto patientDto);
-        PatientDto GetPatientById(int id);
-        List<PatientDto> GetAll();
-        void UpdatePatientById(int id, PatientDto patientDto);
-    }
+        Task RegisterPatient(PatientDto patientDto);
 
+        Task<PatientDto> GetPatientById(int id);
+
+        Task<List<PatientDto>> GetAll();
+
+        Task UpdatePatientById(int id, PatientDto patientDto);
+    }
 }

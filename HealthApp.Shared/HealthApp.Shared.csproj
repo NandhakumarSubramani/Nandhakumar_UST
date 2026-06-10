@@ -51,10 +51,6 @@
     <Compile Include="DTOs\DoctorDto.cs" />
     <Compile Include="DTOs\HealthRecordDto.cs" />
     <Compile Include="DTOs\PatientDto.cs" />
-    <Compile Include="Models\Appointment.cs" />
-    <Compile Include="Models\Doctor.cs" />
-    <Compile Include="Models\HealthRecord.cs" />
-    <Compile Include="Models\Patient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,53 +1,59 @@
 ﻿using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
-using System;
+using HealthApp.API.Service.Interface;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Repository.Impl
 {
     public class PatientRepository : IPatientRepository
     {
-
         private readonly HealthAppDBEntities _db;
+
         public PatientRepository(HealthAppDBEntities context)
         {
             _db = context;
         }
 
-        public void Add(Patient patient)
+        // ✅ ADD
+        public async Task AddAsync(Patient patient)
         {
             _db.Patients.Add(patient);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public List<Patient> GetAll()
+        // ✅ GET ALL
+        public async Task<List<Patient>> GetAllAsync()
         {
-            return _db.Patients.ToList();
+            return await _db.Patients.ToListAsync();
         }
 
-        public Patient GetById(int id)
+        // ✅ GET BY ID
+        public async Task<Patient> GetByIdAsync(int id)
         {
-            return _db.Patients.FirstOrDefault(pa => pa.PatientId == id);
+            return await _db.Patients
+                .FirstOrDefaultAsync(pa => pa.PatientId == id);
         }
-        public void UpdatePatient(int id, Patient patient)
-        {
-            var p = _db.Patients.FirstOrDefault(pa => pa.PatientId == id);
 
-            if (p == null)
-            {
+        // ✅ UPDATE
+        public async Task UpdatePatientAsync(int id, Patient patient)
+        {
+            var existing = await _db.Patients
+                .FirstOrDefaultAsync(pa => pa.PatientId == id);
+
+            if (existing == null)
                 return;
-            }
 
-            p.FullName = patient.FullName;
-            p.DateOfBirth = patient.DateOfBirth;
-            p.Gender = patient.Gender;
-            p.PhoneNumber = patient.PhoneNumber;
-            p.Email = patient.Email;
-            p.InsuranceId = patient.InsuranceId;
+            existing.FullName = patient.FullName;
+            existing.DateOfBirth = patient.DateOfBirth;
+            existing.Gender = patient.Gender;
+            existing.PhoneNumber = patient.PhoneNumber;
+            existing.Email = patient.Email;
+            existing.InsuranceId = patient.InsuranceId;
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
     }
 }

@@ -1,15 +1,20 @@
 ﻿using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Constant;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Interface
 {
     public interface IDoctorService
     {
-        void AddDoctor(DoctorDto dto);
-        List<DoctorDto> GetAllDoctors();
-        DoctorDto GetDoctorById(int id);
-        List<DoctorDto> SearchBySpecialisation(SpecialisationType specialisation);
-        void ChangeDoctorStatus(int id);
+        Task AddDoctor(DoctorDto dto);
+
+        Task<List<DoctorDto>> GetAllDoctors();
+
+        Task<DoctorDto> GetDoctorById(int id);
+
+        Task<List<DoctorDto>> SearchBySpecialisation(SpecialisationType specialisation);
+
+        Task ChangeDoctorStatus(int id);
     }
 }
