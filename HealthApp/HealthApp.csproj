@@ -168,32 +168,15 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
-    <Compile Include="Constant\TimeSlots.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HealthRecordController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
-    <Compile Include="Database\AppointmentDb.cs" />
-    <Compile Include="Database\DoctorDb.cs" />
-    <Compile Include="Database\HealthRecordDb.cs" />
-    <Compile Include="Database\PatientDb.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Appointment.cs" />
-    <Compile Include="Models\Doctor.cs" />
-    <Compile Include="Models\HealthRecord.cs" />
-    <Compile Include="Models\Patient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\Impl\AppointmentRepository.cs" />
-    <Compile Include="Repository\Impl\DoctorRepository.cs" />
-    <Compile Include="Repository\Impl\HealthRecordRepository.cs" />
-    <Compile Include="Repository\Impl\PatientRepository.cs" />
-    <Compile Include="Repository\Interface\IAppointmentRepository.cs" />
-    <Compile Include="Repository\Interface\IDoctorRepository .cs" />
-    <Compile Include="Repository\Interface\IHealthRecordRepository.cs" />
-    <Compile Include="Repository\Interface\IPatientRepository.cs" />
     <Compile Include="Service\Impl\AppointmentService.cs" />
     <Compile Include="Service\Impl\DoctorService.cs" />
     <Compile Include="Service\Impl\HealthRecordService.cs" />

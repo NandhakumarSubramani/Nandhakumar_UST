@@ -11,9 +11,9 @@ namespace HealthApp.API.Repository.Impl
     {
         private readonly HealthAppDBEntities _db;
 
-        public AppointmentRepository()
+        public AppointmentRepository(HealthAppDBEntities db)
         {
-            _db = new HealthAppDBEntities();
+            _db = db;
         }
 
         public void Add(Appointment appointment)
@@ -21,6 +21,12 @@ namespace HealthApp.API.Repository.Impl
             _db.Appointments.Add(appointment);
             _db.SaveChanges();
         }
+
+        public void Save()
+        {
+            _db.SaveChanges();
+        }
+
 
         public List<Appointment> GetAll()
         {

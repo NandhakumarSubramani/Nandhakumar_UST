@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthApp.API.Constant;
+using HealthApp.Shared.Constant;
 using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
@@ -22,14 +22,21 @@ namespace HealthApp.API.Service.Impl
         }
 
         // CREATE
+
+
         public void AddDoctor(DoctorDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.FullName))
                 throw new Exception("Doctor name is required");
 
             var doctor = _mapper.Map<Doctor>(dto);
+
+            doctor.IsActive = true;
+
             _repo.Add(doctor);
         }
+
+
 
         // GET ALL
         public List<DoctorDto> GetAllDoctors()

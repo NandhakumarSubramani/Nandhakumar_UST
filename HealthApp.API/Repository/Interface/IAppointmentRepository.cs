@@ -12,5 +12,6 @@ namespace HealthApp.API.Repository.Interface
         void Add(Appointment appointment);
         List<Appointment> GetAll();
         Appointment GetById(int id);
+        void Save();
     }
 }

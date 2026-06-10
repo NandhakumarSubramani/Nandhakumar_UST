@@ -1,5 +1,5 @@
 ﻿using HealthApp.Shared.DTOs;
-using HealthApp.API.Constant;
+using HealthApp.Shared.Constant;
 using System.Collections.Generic;
 
 namespace HealthApp.API.Service.Interface

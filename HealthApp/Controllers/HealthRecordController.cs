@@ -1,6 +1,5 @@
 ﻿using HealthApp.Service.Interface;
 using HealthApp.Shared.DTOs;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -9,42 +8,24 @@ namespace HealthApp.Controllers
     public class HealthRecordController : Controller
     {
         private readonly IHealthRecordApiService _service;
+        private readonly IAppointmentApiService _appointmentService;
 
-        public HealthRecordController(IHealthRecordApiService service)
+        public HealthRecordController(
+            IHealthRecordApiService service,
+            IAppointmentApiService appointmentService)
         {
             _service = service;
+            _appointmentService = appointmentService;
         }
 
-        // GET ALL
+        // ✅ GET Health Records
         public async Task<ActionResult> HealthRecordsIndex()
         {
             var records = await _service.GetAll();
             return View(records);
         }
 
-        // GET BY PATIENT
-
-        public async Task<ActionResult> GetPatientRecords(int? patientId)
-        {
-            if (!patientId.HasValue)
-                return RedirectToAction("HealthRecordsIndex");
-
-            var data = await _service.GetByPatient(patientId.Value);
-            return View("HealthRecordsIndex", data);
-        }
-
-
-        // FILTER
-        public async Task<ActionResult> GetRecordsByDoctorAndPatient(int? doctorId, int? patientId)
-        {
-            if (!doctorId.HasValue || !patientId.HasValue)
-                return RedirectToAction("HealthRecordsIndex");
-
-            var records = await _service.GetByDoctorAndPatient(doctorId.Value, patientId.Value);
-            return View(records);
-        }
-
-        // CREATE
+        // ✅ CREATE (manual)
         public ActionResult Create()
         {
             return View();
@@ -55,6 +36,36 @@ namespace HealthApp.Controllers
         {
             await _service.Create(dto);
             return RedirectToAction("HealthRecordsIndex");
+        }
+
+        //  GET: Create from Appointment
+        public async Task<ActionResult> CreateFromAppointment(int appointmentId)
+        {
+            var appointment = await _appointmentService.GetById(appointmentId);
+
+            var model = new HealthRecordDto
+            {
+                AppointmentId = appointment.AppointmentId,
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+                PatientName = appointment.PatientName,
+                DoctorName = appointment.DoctorName,
+                VisitDate = appointment.ScheduledDate
+            };
+
+            return View(model);
+        }
+
+        // ✅ ✅ POST: Create from Appointment (ONLY ONE)
+        [HttpPost]
+        public async Task<ActionResult> CreateFromAppointment(HealthRecordDto dto)
+        {
+            await _service.Create(dto);
+
+            // ✅ Mark appointment completed
+            await _appointmentService.MarkCompleted(dto.AppointmentId);
+
+            return RedirectToAction("AppointmentIndex", "Appointment");
         }
     }
 }

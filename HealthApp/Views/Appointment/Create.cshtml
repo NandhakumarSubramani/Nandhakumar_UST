@@ -1,21 +1,39 @@
-﻿@model HealthApp.Models.Appointment
+﻿@model HealthApp.Shared.DTOs.AppointmentDto
 
-<h2>Book Appointment</h2>
 
-@using (Html.BeginForm())
-{
-    <label>Patient Id</label>
-    <input type="number" name="patientId" class="form-control" />
 
-    <label>Doctor Id</label>
-    <input type="number" name="doctorId" class="form-control" />
+<div class="row justify-content-center mt-5">
 
-    <label>Date</label>
-    <input type="date" name="date" class="form-control" />
+    <div class="col-md-6">
 
-    <label>Time Slot</label>
-    <input type="text" name="slot" class="form-control" />
+        <div class="card shadow p-4">
 
-    <button class="btn btn-primary mt-2">Book</button>
-}
+            <h2 class="text-center mb-3">Book Appointment</h2>
 
+            @using (Html.BeginForm())
+            {
+                <label>Patient Id</label>
+                @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control" })
+
+                <label class="mt-2">Doctor Id</label>
+                @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control" })
+
+                <label class="mt-2">Date</label>
+                @Html.TextBoxFor(m => m.ScheduledDate,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" })
+
+                <label class="mt-2">Time Slot</label>
+                @Html.TextBoxFor(m => m.TimeSlot,
+                    new { @class = "form-control", placeholder = "10:00 AM" })
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary w-50">
+                        Book Appointment
+                    </button>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

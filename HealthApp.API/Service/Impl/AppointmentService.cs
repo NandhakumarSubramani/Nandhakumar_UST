@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
-using HealthApp.API.Constant;
 using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constant;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Impl
 {
@@ -88,7 +90,8 @@ namespace HealthApp.API.Service.Impl
         // CANCEL
         public void CancelAppointment(int appointmentId, string reason)
         {
-            var appointment = _repo.GetById(appointmentId);
+            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
 
             if (appointment == null)
                 throw new Exception("Appointment not found");
@@ -99,14 +102,16 @@ namespace HealthApp.API.Service.Impl
             if (appointment.Status == AppointmentStatus.Completed)
                 throw new Exception("Cannot cancel completed appointment");
 
-            appointment.Status = AppointmentStatus.Cancelled;
+          
+            appointment.Status = "Cancelled";
             appointment.CancellationReason = reason;
+            _db.SaveChanges();
         }
 
         // CONFIRM
         public void ConfirmAppointment(int appointmentId)
         {
-            var appointment = _repo.GetById(appointmentId);
+            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 throw new Exception("Appointment not found");
@@ -121,6 +126,7 @@ namespace HealthApp.API.Service.Impl
                 throw new Exception("Already confirmed");
 
             appointment.Status = AppointmentStatus.Confirmed;
+            _db.SaveChanges();
         }
 
         // PATIENT APPOINTMENTS
@@ -192,5 +198,22 @@ namespace HealthApp.API.Service.Impl
 
             return availableSlots;
         }
+
+        // COMPLETE
+        public void CompleteAppointment(int appointmentId)
+        {
+            var appointment = _db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
+            if (appointment == null)
+                throw new Exception("Appointment not found");
+
+            if (appointment.Status != AppointmentStatus.Confirmed)
+                throw new Exception("Only confirmed appointment can be completed");
+
+            appointment.Status = AppointmentStatus.Completed;
+
+            _db.SaveChanges();
+        }
+
     }
 }

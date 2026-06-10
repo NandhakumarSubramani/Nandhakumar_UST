@@ -1,4 +1,4 @@
-﻿using HealthApp.API.Constant;
+﻿using HealthApp.Shared.Constant;
 using HealthApp.API.Data;
 using HealthApp.API.Repository.Impl;
 using HealthApp.API.Service.Impl;

@@ -9,9 +9,9 @@ namespace HealthApp.API.Repository.Impl
     {
         private readonly HealthAppDBEntities _db;
 
-        public HealthRecordRepository()
+        public HealthRecordRepository(HealthAppDBEntities db)
         {
-            _db = new HealthAppDBEntities();
+            _db = db;
         }
 
         public void Add(HealthRecord record)

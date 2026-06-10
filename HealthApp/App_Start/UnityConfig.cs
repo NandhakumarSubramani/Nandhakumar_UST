@@ -1,5 +1,3 @@
-using HealthApp.Repository.Impl;
-using HealthApp.Repository.Interface;
 using HealthApp.Service.Impl;
 using HealthApp.Service.Interface;
 using System.Web.Mvc;
@@ -13,13 +11,9 @@ namespace HealthApp
         public static void RegisterComponents()
         {
 			var container = new UnityContainer();
-            container.RegisterType<IPatientRepository,PatientRepository>();
             container.RegisterType<IPatientApiService, PatientApiService>();
-            container.RegisterType<IDoctorRepository, DoctorRepository>();
             container.RegisterType<IDoctorApiService, DoctorApiService>();
-            container.RegisterType<IHealthRecordRepository, HealthRecordRepository>();
             container.RegisterType<IHealthRecordApiService, HealthRecordApiService>();
-            container.RegisterType<IAppointmentRepository, AppointmentRepository>();
             container.RegisterType<IAppointmentApiService, AppointmentApiService>();
 
 

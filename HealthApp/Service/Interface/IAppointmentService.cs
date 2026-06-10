@@ -10,9 +10,8 @@ namespace HealthApp.Service.Interface
         Task<List<AppointmentDto>> GetAll();
         Task<AppointmentDto> GetById(int id);
         Task<List<AppointmentDto>> GetByPatient(int patientId);
-
         Task Create(AppointmentDto dto);
-
+        Task MarkCompleted(int id);
         Task Confirm(int id);
         Task Cancel(int id, string reason);
 

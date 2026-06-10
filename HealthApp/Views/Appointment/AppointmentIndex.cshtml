@@ -1,14 +1,19 @@
 ﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
+@using HealthApp.Shared.Constant
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
 
 <h2 class="text-primary mb-3">Appointment Details</h2>
 
 <div class="mb-3">
-    <a href="/Appointment/Create" class="btn btn-success">
-        Book Appointment
-    </a>
+    <a href="/Appointment/Create" class="btn btn-success">Book Appointment</a>
 </div>
 
-<!-- ✅ Search by Id -->
 <div class="card p-3 mb-3 shadow">
     <form method="get" action="/Appointment/GetById">
         <input type="number" name="id" class="form-control" placeholder="Enter Id" />
@@ -16,7 +21,6 @@
     </form>
 </div>
 
-<!-- ✅ TABLE -->
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
@@ -26,6 +30,7 @@
             <th>Date</th>
             <th>Slot</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
 
@@ -36,19 +41,67 @@
             {
                 <tr>
                     <td>@item.AppointmentId</td>
-                    <td>@item.PatientName</td>   <!-- ✅ FIX -->
-                    <td>@item.DoctorName</td>    <!-- ✅ FIX -->
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
                     <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
                     <td>@item.TimeSlot</td>
 
                     <td>
                         <span class="badge
-                            @(item.Status == "Confirmed" ? "bg-success" :
-                              item.Status == "Cancelled" ? "bg-danger" :
-                              item.Status == "Completed" ? "bg-info" :
-                              "bg-warning")">
+                        @(item.Status == AppointmentStatus.Confirmed ? "bg-success" :
+                          item.Status == AppointmentStatus.Cancelled ? "bg-danger" :
+                          item.Status == AppointmentStatus.Completed ? "bg-info" :
+                          "bg-warning")">
                             @item.Status
                         </span>
+                    </td>
+
+                    <td>
+                        @if (item.Status == AppointmentStatus.Pending)
+                        {
+                            using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <button type="submit" class="btn btn-success btn-sm me-1">
+                                    Confirm
+                                </button>
+                            }
+
+                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Cancel
+                                </button>
+                            }
+                        }
+                        else if (item.Status == AppointmentStatus.Confirmed)
+                        {
+                            <a href="@Url.Action("CreateFromAppointment", "HealthRecord", new { appointmentId = item.AppointmentId })"
+                               class="btn btn-info btn-sm me-1">Add Record</a>
+
+                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Cancel
+                                </button>
+                            }
+                        }
+                        else if (item.Status == AppointmentStatus.Cancelled)
+                        {
+                            <span class="text-danger">Cancelled</span>
+                        }
+                        else if (item.Status == AppointmentStatus.Completed)
+                        {
+                            <span class="text-success">Completed</span>
+                        }
                     </td>
                 </tr>
             }
@@ -56,9 +109,7 @@
         else
         {
             <tr>
-                <td colspan="6" class="text-danger text-center">
-                    No appointments found
-                </td>
+                <td colspan="7" class="text-danger text-center">No appointments found</td>
             </tr>
         }
     </tbody>

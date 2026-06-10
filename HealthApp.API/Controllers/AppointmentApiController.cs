@@ -21,6 +21,7 @@ namespace HealthApp.API.Controllers
 
         // GET all
         [HttpGet]
+        [Route("api/appointments")]
         public IEnumerable<AppointmentDto> Get()
         {
             return _service.GetAllAppointments();
@@ -28,6 +29,7 @@ namespace HealthApp.API.Controllers
 
         // GET by ID
         [HttpGet]
+        [Route("api/appointments/{id}")]
         public IHttpActionResult GetById(int id)
         {
             try
@@ -43,6 +45,7 @@ namespace HealthApp.API.Controllers
 
         // CREATE
         [HttpPost]
+        [Route("api/appointments")]
         public IHttpActionResult Post(AppointmentDto dto)
         {
             try
@@ -87,5 +90,22 @@ namespace HealthApp.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // COMPLETE
+        [HttpPut]
+        [Route("api/appointments/{id}/complete")]
+        public IHttpActionResult Complete(int id)
+        {
+            try
+            {
+                _service.CompleteAppointment(id);
+                return Ok("Appointment completed");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

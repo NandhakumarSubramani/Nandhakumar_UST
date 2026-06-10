@@ -9,7 +9,7 @@ namespace HealthApp.Service.Impl
 {
     public class AppointmentApiService : IAppointmentApiService
     {
-        private readonly string baseUrl = "https://localhost:44339/api/AppointmentApi";
+        private readonly string baseUrl = "https://localhost:44339/api/appointments";
 
         public async Task<List<AppointmentDto>> GetAll()
         {
@@ -72,5 +72,15 @@ namespace HealthApp.Service.Impl
                 return await res.Content.ReadAsAsync<List<string>>();
             }
         }
+
+
+        public async Task MarkCompleted(int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                await client.PutAsync($"{baseUrl}/{id}/complete", null);
+            }
+        }
+
     }
 }

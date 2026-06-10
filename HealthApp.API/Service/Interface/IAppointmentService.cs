@@ -1,6 +1,7 @@
 ﻿using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Interface
 {
@@ -9,6 +10,7 @@ namespace HealthApp.API.Service.Interface
         void Add(AppointmentDto dto);
         void CancelAppointment(int appointmentId, string reason);
         AppointmentDto GetAppointmentById(int id);
+        void CompleteAppointment(int appointmentId);
         List<AppointmentDto> GetAllAppointments();
         List<AppointmentDto> GetAppointmentsByPatient(int patientId);
         List<string> CheckDoctorAvailability(int doctorId, DateTime date);
