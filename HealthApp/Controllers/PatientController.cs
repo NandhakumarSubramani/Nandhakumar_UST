@@ -1,87 +1,72 @@
-﻿using HealthApp.Models;
-using HealthApp.Service.Interface;
-using System;
-using System.Linq;
+﻿using HealthApp.Service.Interface;
+using HealthApp.Shared.DTOs;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace HealthApp.Controllers
 {
     public class PatientController : Controller
     {
-        private readonly IPatientService _service;
-        public PatientController(IPatientService service)
+        private readonly IPatientApiService _service;
+
+        public PatientController(IPatientApiService service)
         {
             _service = service;
         }
-        public ActionResult PatientIndex()
+
+        public async Task<ActionResult> PatientIndex()
         {
-            var patients = _service.GetAll();
+            var patients = await _service.GetAll();
             return View(patients);
         }
 
-        public ActionResult GetById(int id)
+        public async Task<ActionResult> GetById(int id)
         {
-            var patient = _service.GetPatientById(id);
+            var patient = await _service.GetById(id);
             return View(patient);
         }
-        public ActionResult Edit(int id)
-        {
-            var patient = _service.GetPatientById(id);
-            return View(patient);
-        }
+
         public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult Create(Patient patient)
+        public async Task<ActionResult> Create(PatientDto dto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return View(patient);
-                }
-                _service.RegisterPatient(patient);
+            await _service.Create(dto);
+            return RedirectToAction("PatientIndex");
+        }
+        public async Task<ActionResult> Search(string query)
+        {
+            if (string.IsNullOrEmpty(query))
                 return RedirectToAction("PatientIndex");
-            }
-            catch (Exception ex)
+
+            var patients = await _service.GetAll();
+
+            if (int.TryParse(query, out int id))
             {
-                ModelState.AddModelError("", ex.Message);
-                return View(patient);
+                var result = patients.Find(p => p.PatientId == id);
+                return View("GetById", result);
             }
+
+            var filtered = patients
+                .FindAll(p => p.FullName.ToLower().Contains(query.ToLower()));
+
+            return View("PatientIndex", filtered);
+        }
+
+        public async Task<ActionResult> Edit(int id)
+        {
+            var patient = await _service.GetById(id);
+            return View(patient);
         }
 
         [HttpPost]
-        public ActionResult Edit(int id, Patient patient)
+        public async Task<ActionResult> Edit(int id, PatientDto dto)
         {
-            try
-            {
-                _service.UpdatePatientById(id, patient);
-                return RedirectToAction("PatientIndex");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(patient);
-            }
-        }
-        public ActionResult Search(string query)
-        {
-            if (string.IsNullOrEmpty(query))
-            {
-                return RedirectToAction("PatientIndex");
-            }
-            if (int.TryParse(query, out int id))
-            {
-                var patient = _service.GetPatientById(id);
-                return View("GetById", patient);
-            }
-            var patients = _service.GetAll().Where(p => p.FullName
-                        .ToLower().Contains(query.ToLower())).ToList();
-
-            return View("PatientIndex", patients);
+            await _service.Update(id, dto);
+            return RedirectToAction("PatientIndex");
         }
     }
 }

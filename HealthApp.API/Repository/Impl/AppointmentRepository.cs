@@ -11,6 +11,11 @@ namespace HealthApp.API.Repository.Impl
     {
         private readonly HealthAppDBEntities _db;
 
+        public AppointmentRepository()
+        {
+            _db = new HealthAppDBEntities();
+        }
+
         public void Add(Appointment appointment)
         {
             _db.Appointments.Add(appointment);

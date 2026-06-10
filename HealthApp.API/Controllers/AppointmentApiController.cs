@@ -1,6 +1,7 @@
-﻿using HealthApp.API.Data;
-using HealthApp.API.Repository.Impl;
+﻿using HealthApp.API.Repository.Impl;
 using HealthApp.API.Service.Impl;
+using HealthApp.API.Service.Interface;
+using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -9,40 +10,77 @@ namespace HealthApp.API.Controllers
 {
     public class AppointmentApiController : ApiController
     {
-        private readonly AppointmentService _service;
 
-        public AppointmentApiController()
+        private readonly IAppointmentService _service;
+
+        public AppointmentApiController(IAppointmentService service)
         {
-            _service = new AppointmentService(new AppointmentRepository());
+            _service = service;
         }
 
-        // ✅ GET all
+
+        // GET all
         [HttpGet]
-        public IEnumerable<Appointment> Get()
+        public IEnumerable<AppointmentDto> Get()
         {
             return _service.GetAllAppointments();
         }
 
-        // ✅ GET by Id
+        // GET by ID
         [HttpGet]
         public IHttpActionResult GetById(int id)
         {
-            var data = _service.GetAppointmentById(id);
-
-            if (data == null)
+            try
+            {
+                var data = _service.GetAppointmentById(id);
+                return Ok(data);
+            }
+            catch
+            {
                 return NotFound();
-
-            return Ok(data);
+            }
         }
 
-        // ✅ POST
+        // CREATE
         [HttpPost]
-        public IHttpActionResult Post(Appointment appointment)
+        public IHttpActionResult Post(AppointmentDto dto)
         {
             try
             {
-                _service.Add(appointment);
+                _service.Add(dto);
                 return Ok("Appointment created successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // CANCEL
+        [HttpPut]
+        [Route("api/appointments/{id}/cancel")]
+        public IHttpActionResult Cancel(int id, string reason)
+        {
+            try
+            {
+                _service.CancelAppointment(id, reason);
+                return Ok("Appointment cancelled");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // CONFIRM
+        [HttpPut]
+        [Route("api/appointments/{id}/confirm")]
+        public IHttpActionResult Confirm(int id)
+        {
+            try
+            {
+                _service.ConfirmAppointment(id);
+                return Ok("Appointment confirmed");
             }
             catch (Exception ex)
             {

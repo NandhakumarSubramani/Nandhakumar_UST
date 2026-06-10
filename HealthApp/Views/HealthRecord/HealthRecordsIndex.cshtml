@@ -1,10 +1,14 @@
-﻿@model List<HealthApp.Models.HealthRecord>
+﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
 
 <h2 class="text-primary mb-3">Health Records</h2>
 
 <div class="mb-3">
-    <a href="/HealthRecord/Create" class="btn btn-success">Add New Record</a>
+    <a href="/HealthRecord/Create" class="btn btn-success">
+        Add New Record
+    </a>
 </div>
+
+<h5 class="text-secondary">Search Records</h5>
 
 <div class="card p-3 mb-3 shadow">
     <form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient">
@@ -13,12 +17,33 @@
                 <label>Doctor Id</label>
                 <input type="number" name="doctorId" class="form-control" />
             </div>
+
             <div class="col-md-4">
                 <label>Patient Id</label>
                 <input type="number" name="patientId" class="form-control" />
             </div>
+
             <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary w-100">
+                    Search
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card p-3 mb-3 shadow">
+    <form method="get" action="/HealthRecord/GetPatientRecords">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Patient Id</label>
+                <input type="number" name="patientId" class="form-control" />
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-success w-100">
+                    Get Patient Records
+                </button>
             </div>
         </div>
     </form>
@@ -30,7 +55,7 @@
             <th>Record Id</th>
             <th>Patient Name</th>
             <th>Doctor Name</th>
-            <th>Visit Date</th>
+            <th>Date</th>
             <th>Diagnosis</th>
             <th>Prescription</th>
             <th>Notes</th>
@@ -38,16 +63,27 @@
     </thead>
 
     <tbody>
-        @foreach (var item in Model)
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.RecordId</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Diagnosis</td>
+                    <td>@item.Prescription</td>
+                    <td>@item.Notes</td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@item.RecordId</td>
-                <td>@item.Patient.FullName</td>
-                <td>@item.Doctor.FullName</td>
-                <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
-                <td>@item.Diagnosis</td>
-                <td>@item.Prescription</td>
-                <td>@item.Notes</td>
+                <td colspan="7" class="text-center text-danger">
+                    No records found
+                </td>
             </tr>
         }
     </tbody>

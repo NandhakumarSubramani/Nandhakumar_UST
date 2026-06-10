@@ -1,4 +1,4 @@
-﻿@model List<HealthApp.Models.HealthRecord>
+﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
 
 <h2 class="text-primary mb-3">Health Records</h2>
 
@@ -22,8 +22,8 @@
             {
                 <tr>
                     <td>@item.RecordId</td>
-                    <td>@item.Patient.FullName</td>
-                    <td>@item.Doctor.FullName</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
                     <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
                     <td>@item.Diagnosis</td>
                     <td>@item.Prescription</td>

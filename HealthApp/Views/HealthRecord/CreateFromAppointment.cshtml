@@ -1,12 +1,4 @@
-﻿
-@{
-    ViewBag.Title = "CreateFromAppointment";
-}
-@model HealthApp.Models.HealthRecord
-
-@{
-    ViewBag.Title = "Add Health Record";
-}
+﻿@model HealthApp.Shared.DTOs.HealthRecordDto
 
 <h2 class="text-primary mb-4">Add Health Record</h2>
 
@@ -14,25 +6,23 @@
 
     @using (Html.BeginForm("CreateFromAppointment", "HealthRecord", FormMethod.Post))
     {
-        @Html.HiddenFor(m => m.Patient.PatientId)
-        @Html.HiddenFor(m => m.Doctor.DoctorId)
+        @Html.HiddenFor(m => m.PatientId)
+        @Html.HiddenFor(m => m.DoctorId)
         @Html.HiddenFor(m => m.VisitDate)
 
         <div class="mb-3">
             <label><b>Patient:</b></label>
-            <p class="form-control-plaintext">@Model.Patient.FullName</p>
+            <p class="form-control-plaintext">@Model.PatientName</p>
         </div>
 
         <div class="mb-3">
             <label><b>Doctor:</b></label>
-            <p class="form-control-plaintext">@Model.Doctor.FullName</p>
+            <p class="form-control-plaintext">@Model.DoctorName</p>
         </div>
 
         <div class="mb-3">
             <label><b>Date:</b></label>
-            <p class="form-control-plaintext">
-                @Model.VisitDate.ToString("yyyy-MM-dd")
-            </p>
+            <p class="form-control-plaintext">@Model.VisitDate.ToString("yyyy-MM-dd")</p>
         </div>
 
         <div class="mb-3">
@@ -51,8 +41,9 @@
         </div>
 
         <div class="mt-3">
-            <input type="submit" value="Save" class="btn btn-primary mr-2" />
+            <input type="submit" value="Save" class="btn btn-primary" />
             <a href="/Appointment/AppointmentIndex" class="btn btn-secondary">Back</a>
         </div>
     }
+
 </div>

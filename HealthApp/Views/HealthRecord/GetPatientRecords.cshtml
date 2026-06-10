@@ -1,9 +1,9 @@
-﻿@model List<HealthApp.Models.HealthRecord>
+﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
 
 <h2 class="text-primary mb-3">Patient Records</h2>
 
 <table class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
+    <thead>
         <tr>
             <th>Record Id</th>
             <th>Patient</th>
@@ -16,28 +16,21 @@
     </thead>
 
     <tbody>
-        @if (Model != null && Model.Count > 0)
-        {
-            foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.RecordId</td>
-                    <td>@item.Patient.FullName</td>
-                    <td>@item.Doctor.FullName</td>
-                    <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
-                    <td>@item.Diagnosis</td>
-                    <td>@item.Prescription</td>
-                    <td>@item.Notes</td>
-                </tr>
-            }
-        }
-        else
+        @foreach (var item in Model)
         {
             <tr>
-                <td colspan="7" class="text-center text-danger">No records found</td>
+                <td>@item.RecordId</td>
+                <td>@item.PatientName</td>
+                <td>@item.DoctorName</td>
+                <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Diagnosis</td>
+                <td>@item.Prescription</td>
+                <td>@item.Notes</td>
             </tr>
         }
+
     </tbody>
 </table>
+
 
 <a href="/HealthRecord/HealthRecordsIndex" class="btn btn-secondary">Back</a>

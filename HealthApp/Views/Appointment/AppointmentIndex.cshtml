@@ -1,72 +1,31 @@
-﻿@model List<HealthApp.Models.Appointment>
+﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
 
 <h2 class="text-primary mb-3">Appointment Details</h2>
 
 <div class="mb-3">
-    <a href="/Appointment/Create" class="btn btn-success">Book Appointment</a>
+    <a href="/Appointment/Create" class="btn btn-success">
+        Book Appointment
+    </a>
 </div>
 
-
+<!-- ✅ Search by Id -->
 <div class="card p-3 mb-3 shadow">
     <form method="get" action="/Appointment/GetById">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <label style="margin-bottom:0;">Search by Id:</label>
-            <input type="number" name="id"
-                   class="form-control" style="max-width:200px;" />
-            <button type="submit" class="btn btn-primary">
-                Search
-            </button>
-        </div>
+        <input type="number" name="id" class="form-control" placeholder="Enter Id" />
+        <button class="btn btn-primary mt-2">Search</button>
     </form>
 </div>
 
-<div class="card p-3 mb-3 shadow">
-    <form method="get" action="/Appointment/GetByPatientID">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <label style="margin-bottom:0;">Patient Id:</label>
-            <input type="number" name="patientId"
-                   class="form-control" style="max-width:200px;" />
-            <button type="submit" class="btn btn-primary">
-                Search
-            </button>
-        </div>
-    </form>
-</div>
-
-
-
-<div class="card p-3 mb-3 shadow">
-    <form method="get" action="/Appointment/CheckAvailability">
-        <div class="row">
-            <div class="col-md-4">
-                <label>Doctor Id</label>
-                <input type="number" name="doctorId" class="form-control" />
-            </div>
-
-            <div class="col-md-4">
-                <label>Date</label>
-                <input type="date" name="date" class="form-control" />
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    Check Availability
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<table class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
+<!-- ✅ TABLE -->
+<table class="table table-bordered table-hover">
+    <thead>
         <tr>
             <th>Id</th>
             <th>Patient</th>
             <th>Doctor</th>
             <th>Date</th>
-            <th>Time Slot</th>
+            <th>Slot</th>
             <th>Status</th>
-            <th>Action</th>
         </tr>
     </thead>
 
@@ -77,48 +36,19 @@
             {
                 <tr>
                     <td>@item.AppointmentId</td>
-                    <td>@item.Patient.FullName</td>
-                    <td>@item.Doctor.FullName</td>
+                    <td>@item.PatientName</td>   <!-- ✅ FIX -->
+                    <td>@item.DoctorName</td>    <!-- ✅ FIX -->
                     <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
                     <td>@item.TimeSlot</td>
 
                     <td>
                         <span class="badge
-                            @(item.Status.ToString() == "Confirmed" ? "badge-success" :
-                              item.Status.ToString() == "Cancelled" ? "badge-danger" :
-                              item.Status.ToString() == "Completed" ? "badge-info" :
-                              "badge-warning")"
-                              style="color:black;">
+                            @(item.Status == "Confirmed" ? "bg-success" :
+                              item.Status == "Cancelled" ? "bg-danger" :
+                              item.Status == "Completed" ? "bg-info" :
+                              "bg-warning")">
                             @item.Status
                         </span>
-                    </td>
-
-                    <td>
-                        @if (item.Status == HealthApp.Models.AppointmentStatus.Pending)
-                        {
-                            <a href="/Appointment/Confirm?id=@item.AppointmentId"
-                               class="btn btn-success btn-sm">Confirm</a>
-
-                            <a href="/Appointment/Cancel?id=@item.AppointmentId"
-                               class="btn btn-danger btn-sm">Cancel</a>
-                        }
-                        else if (item.Status == HealthApp.Models.AppointmentStatus.Confirmed)
-                        {
-
-                                <a href="/HealthRecord/CreateFromAppointment?appointmentId=@item.AppointmentId"
-                                   class="btn btn-info btn-sm">Add Health Record</a>
-
-                                <a href="/Appointment/Cancel?id=@item.AppointmentId"
-                                            class="btn btn-danger btn-sm">Cancel</a>
-                        }
-                        else if (item.Status == HealthApp.Models.AppointmentStatus.Cancelled)
-                        {
-                            <span class="text-danger">Cancelled</span>
-                        }
-                        else if (item.Status == HealthApp.Models.AppointmentStatus.Completed)
-                        {
-                            <span class="text-success">Completed</span>
-                        }
                     </td>
                 </tr>
             }
@@ -126,7 +56,7 @@
         else
         {
             <tr>
-                <td colspan="7" class="text-center text-danger">
+                <td colspan="6" class="text-danger text-center">
                     No appointments found
                 </td>
             </tr>

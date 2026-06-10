@@ -14,13 +14,13 @@ namespace HealthApp
         {
 			var container = new UnityContainer();
             container.RegisterType<IPatientRepository,PatientRepository>();
-            container.RegisterType<IPatientService, PatientService>();
+            container.RegisterType<IPatientApiService, PatientApiService>();
             container.RegisterType<IDoctorRepository, DoctorRepository>();
-            container.RegisterType<IDoctorService, DoctorService>();
+            container.RegisterType<IDoctorApiService, DoctorApiService>();
             container.RegisterType<IHealthRecordRepository, HealthRecordRepository>();
-            container.RegisterType<IHealthRecordService, HealthRecordService>();
+            container.RegisterType<IHealthRecordApiService, HealthRecordApiService>();
             container.RegisterType<IAppointmentRepository, AppointmentRepository>();
-            container.RegisterType<IAppointmentService, AppointmentService>();
+            container.RegisterType<IAppointmentApiService, AppointmentApiService>();
 
 
             // register all your components with the container here

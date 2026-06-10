@@ -1,18 +1,13 @@
-﻿using HealthApp.API.Data;
-using System;
+﻿using HealthApp.Shared.DTOs;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HealthApp.API.Service.Interface
 {
     public interface IHealthRecordService
     {
-        void AddRecord(HealthRecord record);
-        List<HealthRecord> GetAllRecords();
-        List<HealthRecord> GetPatientRecords(int patientId);
-        List<HealthRecord> GetHealthRecordsByDoctor(int doctorId, int patientId);
-
+        void AddRecord(HealthRecordDto dto);
+        List<HealthRecordDto> GetAllRecords();
+        List<HealthRecordDto> GetPatientRecords(int patientId);
+        List<HealthRecordDto> GetHealthRecordsByDoctor(int doctorId, int patientId);
     }
 }

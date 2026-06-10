@@ -196,6 +196,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Constant\AppointmentStatus.cs" />
+    <Compile Include="Constant\GenderType.cs" />
     <Compile Include="Constant\SpecialisationType.cs" />
     <Compile Include="Constant\TimeSlots.cs" />
     <Compile Include="Controllers\AppointmentApiController.cs" />
@@ -237,8 +238,6 @@
     <Compile Include="Data\User.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="DTOs\DoctorDto.cs" />
-    <Compile Include="DTOs\PatientDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -422,6 +421,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HealthApp.Shared\HealthApp.Shared.csproj">
+      <Project>{8a1b77b7-831d-4e35-b6dc-94c05f2a6528}</Project>
+      <Name>HealthApp.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

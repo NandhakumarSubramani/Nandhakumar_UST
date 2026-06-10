@@ -1,4 +1,4 @@
-﻿@model HealthApp.Models.HealthRecord
+﻿@model HealthApp.Shared.DTOs.HealthRecordDto
 
 <h2 class="mb-3">Add New Health Record</h2>
 
@@ -8,36 +8,30 @@
     {
         @Html.ValidationSummary(true, "", new { @class = "text-danger mb-2" })
 
-    <div class="form-group">
-        <label>Patient Id</label>
-        <input type="number" name="Patient.PatientId" class="form-control" />
-        @Html.ValidationMessage("Patient.PatientId", "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label>Patient Id</label>
+            @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control", type = "number" })
+        </div>
 
-    </div>
-
-    <div class="form-group mt-2">
-        <label>Doctor Id</label>
-        <input type="number" name="Doctor.DoctorId" class="form-control" />
-        @Html.ValidationMessage("Doctor.DoctorId", "", new { @class = "text-danger" })
-    </div>
+        <div class="form-group mt-2">
+            <label>Doctor Id</label>
+            @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control", type = "number" })
+        </div>
 
         <div class="form-group mt-2">
             <label>Visit Date</label>
             @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}",
                 new { @class = "form-control", type = "date" })
-            @Html.ValidationMessageFor(m => m.VisitDate, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">
             <label>Diagnosis</label>
             @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">
             <label>Prescription</label>
             @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group mt-2">

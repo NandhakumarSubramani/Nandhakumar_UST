@@ -1,19 +1,16 @@
-﻿using HealthApp.Models;
-using System;
+﻿using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Constant;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HealthApp.Service.Interface
 {
-    public interface IDoctorService
+    public interface IDoctorApiService
     {
-        void AddDoctor(Doctor doctor);
-        List<Doctor> GetAllDoctors();
-        Doctor GetDoctorById(int id);
-
-        List<Doctor> SearchBySpecialisation(SpecialisationType specialisation);
-        void ChangeDoctorStatus(int id);
+        Task<List<DoctorDto>> GetAll();
+        Task<DoctorDto> GetById(int id);
+        Task Create(DoctorDto dto);
+        Task<List<DoctorDto>> SearchBySpecialisation(SpecialisationType type);
+        Task ToggleStatus(int id);
     }
 }

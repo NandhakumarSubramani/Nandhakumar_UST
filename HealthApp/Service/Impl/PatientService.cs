@@ -1,72 +1,59 @@
-﻿using HealthApp.Models;
-using HealthApp.Repository.Interface;
+﻿using HealthApp.Shared.DTOs;
 using HealthApp.Service.Interface;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HealthApp.Service.Impl
 {
-    public class PatientService : IPatientService
+    public class PatientApiService : IPatientApiService
     {
-        private readonly IPatientRepository _repo;
+        private readonly string baseUrl = "https://localhost:44339/api/PatientApi";
 
-        public PatientService(IPatientRepository repo)
+        public async Task<List<PatientDto>> GetAll()
         {
-            _repo = repo;
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync(baseUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsAsync<List<PatientDto>>();
+                }
+            }
+
+            return new List<PatientDto>();
         }
 
-        public void RegisterPatient(Patient patient)
+        public async Task<PatientDto> GetById(int id)
         {
-            if (patient == null)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception("Patient cannot be null");
-            }
-            if (string.IsNullOrWhiteSpace(patient.FullName))
-            {
-                throw new Exception("Patient name is required");
-            }
-            if (string.IsNullOrWhiteSpace(patient.Email))
-            {
-                throw new Exception("Email is required");
-            }
-            var patients = _repo.GetAll();
-            bool emailExists = patients.Any(p => p.Email.ToLower() == patient.Email.ToLower());
+                var response = await client.GetAsync($"{baseUrl}/{id}");
 
-            if (emailExists)
-            {
-                throw new Exception("Email already exists");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsAsync<PatientDto>();
+                }
             }
-            _repo.Add(patient);
-        }
-        public List<Patient> GetAll()
-        {
-            return _repo.GetAll();
+
+            return null;
         }
 
-        public Patient GetPatientById(int id)
+        public async Task Create(PatientDto dto)
         {
-            var patient = _repo.GetById(id);
-
-            if (patient == null)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception($"Patient with id {id} not found");
+                await client.PostAsJsonAsync(baseUrl, dto);
             }
-            
-            return patient;
         }
 
-        public void UpdatePatientById(int id, Patient patient)
+        public async Task Update(int id, PatientDto dto)
         {
-            var existingPatient = _repo.GetById(id);
-
-            if (existingPatient == null)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception($"Patient with id {id} not found");
+                await client.PutAsJsonAsync($"{baseUrl}/{id}", dto);
             }
-            patient.PatientId = id;
-            _repo.UpdatePatient(id, patient);
         }
     }
 }

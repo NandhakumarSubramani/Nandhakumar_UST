@@ -1,24 +1,17 @@
 ﻿@model List<string>
 
-<h2 class="mb-3">Available Slots</h2>
+<h2>Available Slots</h2>
 
-<div class="card shadow p-4">
-
-    @if (Model != null && Model.Count > 0)
+@if (Model != null)
+{
+    foreach (var s in Model)
     {
-        <ul class="list-group">
-            @foreach (var slot in Model)
-            {
-                <li class="list-group-item">@slot</li>
-            }
-        </ul>
+        <p>@s</p>
     }
-    else
-    {
-        <div class="alert alert-warning">
-            No slots available
-        </div>
-    }
+}
+else
+{
+    <p>No Slots</p>
+}
 
-    <a href="/Appointment/AppointmentIndex" class="btn btn-secondary mt-3">Back</a>
-</div>
+<a href="/Appointment/AppointmentIndex">Back</a>

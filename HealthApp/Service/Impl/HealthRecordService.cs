@@ -1,52 +1,54 @@
-﻿using HealthApp.Database;
-using HealthApp.Models;
-using HealthApp.Repository.Interface;
-using HealthApp.Service.Interface;
-using System;
+﻿using HealthApp.Service.Interface;
+using HealthApp.Shared.DTOs;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HealthApp.Service.Impl
 {
-    public class HealthRecordService : IHealthRecordService
+    public class HealthRecordApiService : IHealthRecordApiService
     {
-        private readonly IHealthRecordRepository _repo;
+        private readonly string baseUrl = "https://localhost:44339/api/healthrecords";
 
-        public HealthRecordService(IHealthRecordRepository repo)
+        public async Task<List<HealthRecordDto>> GetAll()
         {
-            _repo = repo;
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync(baseUrl);
+                if (res.IsSuccessStatusCode)
+                    return await res.Content.ReadAsAsync<List<HealthRecordDto>>();
+            }
+            return new List<HealthRecordDto>();
         }
 
-        public void AddRecord(HealthRecord record)
+        public async Task<List<HealthRecordDto>> GetByPatient(int patientId)
         {
-            var all = _repo.GetAll();
-            record.RecordId = all.Any()? all.Max(r => r.RecordId) + 1: 1;
-            _repo.Add(record);
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync($"{baseUrl}/patient/{patientId}");
+                if (res.IsSuccessStatusCode)
+                    return await res.Content.ReadAsAsync<List<HealthRecordDto>>();
+            }
+            return new List<HealthRecordDto>();
         }
 
-        public List<HealthRecord> GetAllRecords()
+        public async Task<List<HealthRecordDto>> GetByDoctorAndPatient(int doctorId, int patientId)
         {
-            return _repo.GetAll();
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync($"{baseUrl}/filter?doctorId={doctorId}&patientId={patientId}");
+                if (res.IsSuccessStatusCode)
+                    return await res.Content.ReadAsAsync<List<HealthRecordDto>>();
+            }
+            return new List<HealthRecordDto>();
         }
 
-        public List<HealthRecord> GetPatientRecords(int patientId)
+        public async Task Create(HealthRecordDto dto)
         {
-            var all = _repo.GetAll();
-
-            return all.Where(r => r.Patient != null && r.Patient.PatientId == patientId).ToList();
-        }
-
-        public List<HealthRecord> GetHealthRecordsByDoctor(int doctorId, int patientId)
-        {
-            var all = _repo.GetAll();
-
-            return all.Where(r => r.Doctor != null
-                         && r.Patient != null
-                         && r.Doctor.DoctorId == doctorId
-                         && r.Patient.PatientId == patientId)
-                .OrderByDescending(r => r.VisitDate).ToList();
+            using (HttpClient client = new HttpClient())
+            {
+                await client.PostAsJsonAsync(baseUrl, dto);
+            }
         }
     }
 }

@@ -1,253 +1,76 @@
-﻿using HealthApp.Constant;
-using HealthApp.Models;
-using HealthApp.Repository.Interface;
-using HealthApp.Service.Interface;
+﻿using HealthApp.Service.Interface;
+using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HealthApp.Service.Impl
 {
-    public class AppointmentService : IAppointmentService
+    public class AppointmentApiService : IAppointmentApiService
     {
-        private readonly IAppointmentRepository _repo;
+        private readonly string baseUrl = "https://localhost:44339/api/AppointmentApi";
 
-        public AppointmentService(IAppointmentRepository repo)
+        public async Task<List<AppointmentDto>> GetAll()
         {
-            _repo = repo;
-        }
-
-        public Appointment BookAppointment(
-            Patient patient,
-            Doctor doctor,
-            DateTime date,
-            string slot)
-        {
-            if (date.Date < DateTime.Today)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception("Cannot book past date.");
-            }
-
-            if (!doctor.IsActive)
-            {
-                throw new Exception("Doctor unavailable.");
-            }
-
-            if (!TimeSlots.Slots.Contains(slot))
-            {
-                throw new Exception("Invalid slot.");
-            }
-
-            if (date.Date == DateTime.Today)
-            {
-                DateTime slotTime = DateTime.ParseExact(slot, "hh:mm tt", CultureInfo.InvariantCulture);
-
-                DateTime finalTime = date.Date + slotTime.TimeOfDay;
-
-                if (finalTime < DateTime.Now)
-                {
-                    throw new Exception("Slot already over.");
-                }
-            }
-
-            bool sameDoctorBooked = _repo.GetAll().Any(a => a.Patient.PatientId == patient.PatientId
-                && a.Doctor.DoctorId == doctor.DoctorId && a.ScheduledDate.Date == date.Date
-                && a.Status != AppointmentStatus.Cancelled);
-
-            if (sameDoctorBooked)
-            {
-                throw new Exception("You already booked an appointment with this doctor today.");
-            }
-
-
-            bool sameSlotBooked = _repo.GetAll().Any(a => a.Patient.PatientId == patient.PatientId
-                && a.ScheduledDate.Date == date.Date && a.TimeSlot == slot
-                && a.Status != AppointmentStatus.Cancelled);
-
-            if (sameSlotBooked)
-            {
-                throw new Exception("You already have another appointment in this time slot.");
-            }
-
-            bool alreadyBooked = _repo.GetAll().Any(a => a.Doctor.DoctorId == doctor.DoctorId
-                    && a.ScheduledDate.Date == date.Date && a.TimeSlot == slot
-                    && a.Status != AppointmentStatus.Cancelled);
-
-            if (alreadyBooked)
-            {
-                throw new Exception("Slot already booked.");
-            }
-
-            Appointment appointment = new Appointment
-            {
-                AppointmentId = _repo.GetAll().Count + 1,
-
-                Patient = patient,
-
-                Doctor = doctor,
-
-                ScheduledDate = date,
-
-                TimeSlot = slot
-            };
-
-            _repo.Add(appointment);
-
-            return appointment;
-        }
-
-        public void CancelAppointment(int appointmentId, string reason)
-        {
-            var appointment = _repo.GetById(appointmentId);
-
-            if (appointment == null)
-            {
-                throw new Exception($"The appointment with id {appointmentId} not found");
-            }
-
-            if (appointment.Status == AppointmentStatus.Cancelled)
-            {
-
-                throw new Exception("This appointment was already cancelled.");
-            }
-
-            if (appointment.Status == AppointmentStatus.Completed)
-            {
-                throw new Exception("Completed appointments cannot be cancelled.");
-            }
-
-            if (appointment != null)
-            {
-                appointment.Cancel(reason);
+                var res = await client.GetAsync(baseUrl);
+                return await res.Content.ReadAsAsync<List<AppointmentDto>>();
             }
         }
 
-        public Appointment GetAppointmentById(int id)
+        public async Task<AppointmentDto> GetById(int id)
         {
-            var appointment = _repo.GetById(id);
-
-            if (appointment == null)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception($"Appointment with id {id} not found");
+                var res = await client.GetAsync($"{baseUrl}/{id}");
+                return await res.Content.ReadAsAsync<AppointmentDto>();
             }
-
-            return appointment;
         }
 
-        public List<Appointment> GetAllAppointments()
+        public async Task<List<AppointmentDto>> GetByPatient(int patientId)
         {
-            var list = _repo.GetAll();
-
-            if (list == null || list.Count == 0)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception("No appointments found");
+                var res = await client.GetAsync($"{baseUrl}/patient/{patientId}");
+                return await res.Content.ReadAsAsync<List<AppointmentDto>>();
             }
-
-            return list;
         }
 
-        public List<Appointment> GetAppointmentsByPatient(int patientId)
+        public async Task Create(AppointmentDto dto)
         {
-            return _repo.GetAll().Where(a => a.Patient.PatientId == patientId &&
-                (a.Status == AppointmentStatus.Confirmed || a.Status == AppointmentStatus.Pending
-                || a.Status == AppointmentStatus.Cancelled) && a.ScheduledDate.Date >= DateTime.Today)
-                .OrderBy(a => a.ScheduledDate).ThenBy(a => a.TimeSlot).ToList();
-        }
-        public List<Appointment> GetUpcomingAppointmentsByDoctor(int doctorId, DateTime fromDate,
-            DateTime toDate)
-        {
-
-            if (fromDate.Date < DateTime.Today)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception("From date cannot be in the past");
+                await client.PostAsJsonAsync(baseUrl, dto);
             }
-
-            if (fromDate > toDate)
-            {
-                throw new Exception("Invalid date range");
-            }
-
-            var result = _repo.GetAll().Where(a => a.Doctor.DoctorId == doctorId && a.Status
-                == AppointmentStatus.Confirmed && a.ScheduledDate.Date >= fromDate.Date
-                && a.ScheduledDate.Date <= toDate.Date && a.ScheduledDate.Date >= DateTime.Today)
-                .OrderBy(a => a.ScheduledDate).ThenBy(a => a.TimeSlot).ToList();
-
-            if (result.Count == 0)
-            {
-                throw new Exception($"No upcoming appointments found for doctor id {doctorId}");
-            }
-
-            return result;
         }
 
-        public List<string> CheckDoctorAvailability(int doctorId, DateTime date)
+        public async Task Confirm(int id)
         {
-            if (date.Date < DateTime.Today)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception("The selected date is already over.");
+                await client.PutAsync($"{baseUrl}/{id}/confirm", null);
             }
-
-            if (date.Date > DateTime.Today.AddDays(90))
-            {
-                throw new Exception("Appointments can only be checked within 90 days from today.");
-            }
-
-            var bookedSlots = _repo.GetAll().Where(a => a.Doctor.DoctorId == doctorId &&
-                    a.ScheduledDate.Date == date.Date && a.Status != AppointmentStatus.Cancelled)
-                    .Select(a => a.TimeSlot).ToList();
-
-
-            var availableSlots = TimeSlots.Slots.Except(bookedSlots).ToList();
-
-
-            if (availableSlots.Count == 0)
-            {
-                throw new Exception("No available slots on this day.");
-            }
-
-            return availableSlots;
         }
 
-        public List<Appointment> GetPendingAppointmentsByDoctor(int doctorId)
+        public async Task Cancel(int id, string reason)
         {
-            var result = _repo.GetAll().Where(a => a.Doctor.DoctorId == doctorId &&
-                 a.Status == AppointmentStatus.Pending).OrderBy(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot).ToList();
-            if (result.Count == 0)
+            using (HttpClient client = new HttpClient())
             {
-                throw new Exception($"No existing appointments for doctor with id {doctorId}");
+                await client.PutAsync($"{baseUrl}/{id}/cancel?reason={Uri.EscapeDataString(reason)}", null);
             }
-            return result;
         }
 
-        public void ConfirmAppointment(int appointmentId)
+        public async Task<List<string>> CheckAvailability(int doctorId, DateTime date)
         {
-            var appointment = _repo.GetById(appointmentId);
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync(
+                    $"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
 
-            if (appointment == null)
-            {
-                throw new Exception($"Appointment with id {appointmentId} not found");
+                return await res.Content.ReadAsAsync<List<string>>();
             }
-
-            if (appointment.Status == AppointmentStatus.Cancelled)
-            {
-                throw new Exception(
-                    "Cancelled appointment cannot be confirmed.");
-            }
-            if (appointment.Status == AppointmentStatus.Completed)
-            {
-                throw new Exception(
-                    "The appointment is already completed");
-            }
-            if (appointment.Status == AppointmentStatus.Confirmed)
-            {
-                throw new Exception(
-                    "You have already confirmed this appointment");
-            }
-
-            appointment.Confirm();
         }
     }
 }

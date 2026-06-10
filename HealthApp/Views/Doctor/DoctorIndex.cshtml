@@ -1,55 +1,64 @@
-﻿@model List<HealthApp.Models.Doctor>
+﻿@model List<HealthApp.Shared.DTOs.DoctorDto>
 
 <h2 class="text-primary mb-3">Doctor Details</h2>
 
 <div class="mb-3">
-    <a href="/Doctor/Create" class="btn btn-success">Add New Doctor</a>
+    <a href="/Doctor/Create" class="btn btn-success">
+        Add New Doctor
+    </a>
 </div>
 
+<!-- ✅ SEARCH -->
 <div class="card p-3 mb-3 shadow">
     @using (Html.BeginForm("Search", "Doctor", FormMethod.Get))
     {
-        <div style="display:flex; align-items:center; gap:10px;">
-            <label style="margin-bottom:0;"><b>Enter ID or Name:</b></label>
-            <input type="text" name="query" class="form-control" style="max-width:250px;" />
-            <button type="submit" class="btn btn-primary">Search</button>
+        <div style="display:flex; gap:10px;">
+            <label><b>Search:</b></label>
+
+            <input type="text"
+                   name="query"
+                   class="form-control"
+                   placeholder="Enter name or ID" />
+
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
         </div>
     }
 </div>
+
+<!-- ✅ FILTER -->
 <div class="card p-3 mb-3 shadow">
     @using (Html.BeginForm("SearchBySpecialisation", "Doctor", FormMethod.Get))
     {
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; gap:10px;">
+            <label><b>Specialisation:</b></label>
 
-            <label style="margin-bottom:0;"><b>Specialisation:</b></label>
-
-            <select name="specialisation" class="form-control" style="max-width:250px;">
+            <select name="specialisation" class="form-control">
                 <option value="">-- Select --</option>
-                <option>GeneralPhysician</option>
                 <option>Cardiologist</option>
                 <option>Dermatologist</option>
                 <option>Neurologist</option>
-                <option>Orthopedic</option>
                 <option>Pediatrician</option>
-                <option>Psychiatrist</option>
+                <option>Orthopedic</option>
                 <option>ENT</option>
                 <option>Gynecologist</option>
             </select>
 
-            <button type="submit" class="btn btn-primary">Search</button>
-
+            <button type="submit" class="btn btn-primary">
+                Filter
+            </button>
         </div>
     }
 </div>
 
+<!-- ✅ TABLE -->
 <table class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
             <th>Id</th>
             <th>Name</th>
             <th>Specialisation</th>
-            <th>Phone</th>
-            <th>Email</th>
             <th>Experience</th>
             <th>Fee</th>
             <th>Status</th>
@@ -66,21 +75,23 @@
                     <td>@item.DoctorId</td>
                     <td>@item.FullName</td>
                     <td>@item.Specialisation</td>
-                    <td>@item.DoctorPhoneNo</td>
-                    <td>@item.DoctorEmail</td>
                     <td>@item.YearsOfExperience</td>
                     <td>@item.ConsultationFee</td>
 
+                    <!-- ✅ STATUS -->
                     <td>
-                        <span class="badge @(item.IsActive ? "badge-success" : "badge-danger")" style="color:black;">
+                        <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
                             @(item.IsActive ? "Active" : "Inactive")
                         </span>
                     </td>
 
+                    <!-- ✅ TOGGLE BUTTON -->
                     <td>
-                        <a href="/Doctor/ToggleStatus?id=@item.DoctorId"
+                        <a href="/Doctor/ToggleStatus/@item.DoctorId"
                            class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
-                            @(item.IsActive ? "Deactivate" : "Activate")
+
+                            @(item.IsActive ? "Deactivate " : "Activate ")
+
                         </a>
                     </td>
                 </tr>
@@ -89,7 +100,9 @@
         else
         {
             <tr>
-                <td colspan="9" class="text-center text-danger">No doctors found</td>
+                <td colspan="7" class="text-center text-danger">
+                    No doctors found
+                </td>
             </tr>
         }
     </tbody>

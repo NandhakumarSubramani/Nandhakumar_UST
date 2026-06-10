@@ -1,89 +1,88 @@
-﻿using HealthApp.Models;
-using HealthApp.Service.Interface;
-using System;
+﻿using HealthApp.Service.Interface;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Constant;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace HealthApp.Controllers
 {
     public class DoctorController : Controller
     {
-        private readonly IDoctorService _service;
+        private readonly IDoctorApiService _service;
 
-        public DoctorController(IDoctorService service)
+        public DoctorController(IDoctorApiService service)
         {
             _service = service;
         }
-        public ActionResult DoctorIndex()
+
+        // GET ALL
+        public async Task<ActionResult> DoctorIndex()
         {
-            var doctors = _service.GetAllDoctors();
+            var doctors = await _service.GetAll();
             return View(doctors);
         }
+
+        // CREATE
         public ActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
-        public ActionResult Create(Doctor doctor)
+        public async Task<ActionResult> Create(DoctorDto dto)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return View(doctor);
-                }
-                _service.AddDoctor(doctor);
-                return RedirectToAction("DoctorIndex");
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Email"))
-                {
-                    ModelState.AddModelError("DoctorEmail", ex.Message);
-                }
-                else
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-                return View(doctor);
-            }
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            await _service.Create(dto);
+            return RedirectToAction("DoctorIndex");
         }
-        public ActionResult SearchBySpecialisation(SpecialisationType? specialisation)
+
+        // SEARCH BY SPECIALISATION
+        public async Task<ActionResult> SearchBySpecialisation(SpecialisationType? specialisation)
         {
             if (specialisation == null)
-            {
-                var allDoctors = _service.GetAllDoctors();
-                return View("DoctorIndex", allDoctors);
-            }
-            var doctors = _service.SearchBySpecialisation(specialisation.Value);
-            return View("DoctorIndex", doctors); 
+                return RedirectToAction("DoctorIndex");
+
+            var doctors = await _service.SearchBySpecialisation(specialisation.Value);
+            return View("DoctorIndex", doctors);
         }
-        public ActionResult GetById(int id)
+
+        // GET BY ID
+        public async Task<ActionResult> GetById(int id)
         {
-            var doctor = _service.GetDoctorById(id);
+            var doctor = await _service.GetById(id);
             return View(doctor);
         }
 
-        public ActionResult ToggleStatus(int id)
+        // TOGGLE STATUS
+        public async Task<ActionResult> ToggleStatus(int id)
         {
-            _service.ChangeDoctorStatus(id);
+            await _service.ToggleStatus(id);
             return RedirectToAction("DoctorIndex");
         }
-        public ActionResult Search(string query)
+
+        // SEARCH
+        public async Task<ActionResult> Search(string query)
         {
             if (string.IsNullOrEmpty(query))
-            {
                 return RedirectToAction("DoctorIndex");
-            }
+
+            var doctors = await _service.GetAll();
+
             if (int.TryParse(query, out int id))
             {
-                var doctor = _service.GetDoctorById(id);
+                var doctor = await _service.GetById(id);
                 return View("GetById", doctor);
             }
-            var doctors = _service.GetAllDoctors().Where(d => d.FullName.ToLower()
-                        .Contains(query.ToLower())).ToList();
 
-            return View("DoctorIndex", doctors);
+            var filtered = doctors
+                .Where(d => d.FullName.ToLower().Contains(query.ToLower()))
+                .ToList();
+
+            return View("DoctorIndex", filtered);
         }
     }
 }

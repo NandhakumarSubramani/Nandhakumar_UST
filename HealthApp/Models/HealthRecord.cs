@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -12,10 +11,7 @@ namespace HealthApp.Models
         public Patient Patient { get; set; } = default;
         public Doctor Doctor { get; set; } = default;
         public DateTime VisitDate { get; set; }
-        [Required(ErrorMessage = "Diagnosis is required")]
         public string Diagnosis { get; set; }
-
-        [Required(ErrorMessage = "Prescription is required")]
         public string Prescription { get; set; }
         public string Notes { get; set; } = string.Empty;
 

@@ -1,72 +1,82 @@
-﻿using HealthApp.API.Data;
+﻿using AutoMapper;
+using HealthApp.API.Data;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace HealthApp.API.Service.Impl
 {
     public class PatientService : IPatientService
     {
         private readonly IPatientRepository _repo;
+        private readonly IMapper _mapper;
 
-        public PatientService(IPatientRepository repo)
+        public PatientService(IPatientRepository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
-        public void RegisterPatient(Patient patient)
+        // CREATE
+        public void RegisterPatient(PatientDto dto)
         {
-            if (patient == null)
-            {
+            if (dto == null)
                 throw new Exception("Patient cannot be null");
-            }
-            if (string.IsNullOrWhiteSpace(patient.FullName))
-            {
+
+            if (string.IsNullOrWhiteSpace(dto.FullName))
                 throw new Exception("Patient name is required");
-            }
-            if (string.IsNullOrWhiteSpace(patient.Email))
-            {
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new Exception("Email is required");
-            }
 
             var patients = _repo.GetAll();
-            bool emailExists = patients.Any(p => p.Email.ToLower() == patient.Email.ToLower());
+
+            bool emailExists = patients.Any(p =>
+                p.Email.ToLower() == dto.Email.ToLower());
 
             if (emailExists)
-            {
                 throw new Exception("Email already exists");
-            }
+
+            var patient = _mapper.Map<Patient>(dto);
+
+            patient.CreatedDate = DateTime.Now;
+
             _repo.Add(patient);
         }
-        public List<Patient> GetAll()
+
+        // GET ALL
+        public List<PatientDto> GetAll()
         {
-            return _repo.GetAll();
+            var list = _repo.GetAll();
+            return _mapper.Map<List<PatientDto>>(list);
         }
 
-        public Patient GetPatientById(int id)
+        // GET BY ID
+        public PatientDto GetPatientById(int id)
         {
             var patient = _repo.GetById(id);
 
             if (patient == null)
-            {
                 throw new Exception($"Patient with id {id} not found");
-            }
-            
-            return patient;
+
+            return _mapper.Map<PatientDto>(patient);
         }
 
-        public void UpdatePatientById(int id, Patient patient)
+        // UPDATE
+        public void UpdatePatientById(int id, PatientDto dto)
         {
             var existingPatient = _repo.GetById(id);
 
             if (existingPatient == null)
-            {
                 throw new Exception($"Patient with id {id} not found");
-            }
+
+            var patient = _mapper.Map<Patient>(dto);
+
             patient.PatientId = id;
+
             _repo.UpdatePatient(id, patient);
         }
     }

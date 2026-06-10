@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using HealthApp.API.Constant;
+﻿using HealthApp.API.Constant;
 using HealthApp.API.Data;
-using HealthApp.API.DTOs;
-using HealthApp.API.Mapping;
 using HealthApp.API.Repository.Impl;
 using HealthApp.API.Service.Impl;
+using HealthApp.API.Service.Interface;
+using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -12,65 +11,48 @@ using System.Web.Http;
 namespace HealthApp.API.Controllers
 {
     [RoutePrefix("api/doctors")]
-
     public class DoctorApiController : ApiController
     {
-        private readonly DoctorService _service;
-        private readonly IMapper _mapper;
-        public DoctorApiController()
+
+        private readonly IDoctorService _service;
+        public DoctorApiController(IDoctorService service)
         {
-            var db = new HealthAppDBEntities();
-            _service = new DoctorService(new DoctorRepository(db));
-
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>(); });
-
-            _mapper = config.CreateMapper();
-
+            _service = service;
         }
 
 
-
-        // ✅ GET ALL
+        // GET all doctors
         [HttpGet]
         [Route("")]
-        public IHttpActionResult GetAll()
+        public IEnumerable<DoctorDto> GetAll()
         {
-
-            var doctors = _service.GetAllDoctors();
-            var result = _mapper.Map<List<DoctorDto>>(doctors);
-
-            return Ok(result);
-
-           // return Ok(_service.GetAllDoctors());
+            return _service.GetAllDoctors();
         }
 
-        // ✅ GET BY ID
+        // GET doctor by ID
         [HttpGet]
         [Route("{id}")]
         public IHttpActionResult GetById(int id)
         {
-            var doctor = _service.GetDoctorById(id);
-
-            if (doctor == null)
+            try
+            {
+                var doctor = _service.GetDoctorById(id);
+                return Ok(doctor);
+            }
+            catch
+            {
                 return NotFound();
-
-            return Ok(doctor);
+            }
         }
 
-        // ✅ CREATE
+        // CREATE doctor
         [HttpPost]
         [Route("")]
-        public IHttpActionResult Create(Doctor doctor)
+        public IHttpActionResult Create(DoctorDto dto)
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                _service.AddDoctor(doctor);
-
+                _service.AddDoctor(dto);
                 return Ok("Doctor added successfully");
             }
             catch (Exception ex)
@@ -79,7 +61,7 @@ namespace HealthApp.API.Controllers
             }
         }
 
-        // ✅ SEARCH BY SPECIALISATION
+        // SEARCH by specialisation
         [HttpGet]
         [Route("specialisation/{type}")]
         public IHttpActionResult SearchBySpecialisation(SpecialisationType type)
@@ -88,13 +70,20 @@ namespace HealthApp.API.Controllers
             return Ok(result);
         }
 
-        // ✅ TOGGLE ACTIVE / INACTIVE
+        // TOGGLE active/inactive
         [HttpPut]
         [Route("{id}/toggle")]
         public IHttpActionResult ToggleStatus(int id)
         {
-            _service.ChangeDoctorStatus(id);
-            return Ok("Doctor status updated");
+            try
+            {
+                _service.ChangeDoctorStatus(id);
+                return Ok("Doctor status updated");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

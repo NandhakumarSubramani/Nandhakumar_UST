@@ -1,33 +1,21 @@
 ﻿@model HealthApp.Models.Appointment
 
-<h2 class="mb-3">Book Appointment</h2>
+<h2>Book Appointment</h2>
 
-<div class="card shadow p-4">
-    @using (Html.BeginForm())
-    {
-        <div class="form-group">
-            <label>Patient Id</label>
-            <input type="number" name="patientId" class="form-control" />
-        </div>
+@using (Html.BeginForm())
+{
+    <label>Patient Id</label>
+    <input type="number" name="patientId" class="form-control" />
 
-        <div class="form-group mt-2">
-            <label>Doctor Id</label>
-            <input type="number" name="doctorId" class="form-control" />
-        </div>
+    <label>Doctor Id</label>
+    <input type="number" name="doctorId" class="form-control" />
 
-        <div class="form-group mt-2">
-            <label>Date</label>
-            <input type="date" name="date" class="form-control" />
-        </div>
+    <label>Date</label>
+    <input type="date" name="date" class="form-control" />
 
-        <div class="form-group mt-2">
-            <label>Time Slot</label>
-            <input type="text" name="slot" class="form-control" placeholder="10:00 AM" />
-        </div>
+    <label>Time Slot</label>
+    <input type="text" name="slot" class="form-control" />
 
-        <div class="mt-3">
-            <input type="submit" value="Book" class="btn btn-primary" />
-            <a href="/Appointment/AppointmentIndex" class="btn btn-secondary">Back</a>
-        </div>
-    }
-</div>
+    <button class="btn btn-primary mt-2">Book</button>
+}
+
